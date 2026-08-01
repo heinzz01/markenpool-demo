@@ -2585,10 +2585,15 @@ const MOCK_LOCS=[
 /* Foto-Pfade: absolute URLs bleiben, repo-relative Pfade (z. B. "shared/fotos/...") werden
    relativ zur Marken-Datei aufgelöst, alles andere geht über storageUrl (Bildspeicher).
    Beim Wechsel auf R2 muss nur storageUrl/diese eine Stelle angepasst werden. */
+/* Muss mehrfach anwendbar sein: `normLoc`/`freenetLocs` lösen die Pfade schon auf,
+   `fotoNorm` läuft an der Ausgabestelle noch einmal darüber. Ohne die `../`-Regel
+   wurde ein bereits aufgelöstes `../shared/…` fälschlich als Storage-Pfad behandelt
+   und die Bilder blieben leer. */
 function photoUrl(p){
   if(!p) return '';
   const s=String(p);
   if(/^https?:\/\//.test(s)) return s;
+  if(/^\.\.\//.test(s)) return s;                                  // schon aufgelöst
   if(/^(shared|einzelhaendler|marke)\//.test(s)) return '../'+s;
   return (typeof storageUrl==='function')?storageUrl(s):s;
 }
@@ -2788,17 +2793,20 @@ function fotoNorm(x){
   if(!x.url) return null;
   return { url: photoUrl(x.url), fx: (x.fx==null?50:+x.fx), fy: (x.fy==null?50:+x.fy) };
 }
+/* Gibt zurück, ob DIESER Aufruf wirklich Fotos nachgeladen hat. Der Rückgabewert ist
+   der einzige Schutz gegen die Endlosschleife in `mitFotos` — siehe dort. */
 async function ladeFotos(loc){
-  if(!loc || !loc.loc_id || loc.real === false) return;        // Demo-Gruppen bringen ihre eigenen mit
-  if(_fotoCache.has(loc.loc_id)){ loc.fotos = _fotoCache.get(loc.loc_id); return; }
-  if(typeof sbm === 'undefined') return;
+  if(!loc || !loc.loc_id || loc.real === false) return false;  // Verbünde/Demo bringen ihre eigenen mit
+  if(_fotoCache.has(loc.loc_id)){ loc.fotos = _fotoCache.get(loc.loc_id); return false; }
+  if(typeof sbm === 'undefined') return false;
   try{
     const {data, error} = await sbm.rpc('retailer_fotos', { p_loc_id: loc.loc_id });
-    if(error){ console.warn('retailer_fotos', error.message); return; }
+    if(error){ console.warn('retailer_fotos', error.message); return false; }
     const liste = (Array.isArray(data) ? data : []).map(fotoNorm).filter(Boolean);
     _fotoCache.set(loc.loc_id, liste);
     loc.fotos = liste;
-  }catch(e){ console.warn('retailer_fotos', e); }
+    return liste.length > 0;
+  }catch(e){ console.warn('retailer_fotos', e); return false; }
 }
 /* Nachladen und erst dann neu zeichnen — sonst blitzt die Platzhalter-Kachel auf.
    ACHTUNG Endlosschleife: Das Neuzeichnen ruft `mitFotos` erneut auf. Beim zweiten Mal
@@ -2807,7 +2815,13 @@ async function ladeFotos(loc){
 function mitFotos(loc, neuZeichnen){
   if(!loc || !loc.loc_id) return;
   if(_fotoCache.has(loc.loc_id)){ loc.fotos = _fotoCache.get(loc.loc_id); return; }
-  ladeFotos(loc).then(()=>{ if(loc.fotos && loc.fotos.length) neuZeichnen(); });
+  // NUR neu zeichnen, wenn dieser Aufruf die Fotos wirklich geholt hat.
+  // Die alte Bedingung `if(loc.fotos && loc.fotos.length)` war für Verbünde immer wahr:
+  // freenet bringt seine Fotos aus `retailer_groups` mit, `ladeFotos()` steigt bei
+  // `real===false` sofort aus und legt nichts in den Zwischenspeicher — also war die
+  // Bedingung beim nächsten Durchlauf wieder wahr. Ergebnis: ein Klick auf einen
+  // freenet-Standort zeichnete endlos neu und die Ladenansicht kam nie zum Stehen.
+  ladeFotos(loc).then(geholt=>{ if(geholt) neuZeichnen(); });
 }
 function storeHeroHtml(loc){
   const nm=esc(loc.group_name||loc.company||'Laden');
@@ -2896,7 +2910,7 @@ function renderGreyCard(loc){
       </div>
       ${effLoc(loc)==='geschlossen'
         ? `<div class="grey-lock"><i class="ph ph-prohibit"></i> Dieser Laden nimmt zurzeit keine neuen Marken auf.</div>`
-        : `<div class="grey-lock"><i class="ph ph-clock"></i> ${esc(l.coming_soon_text
+        : `<div class="grey-lock"><i class="ph ph-clock"></i> ${esc(loc.coming_soon_text
             || 'Dieser Laden vervollständigt gerade sein Profil. Sobald er fertig ist, kannst du ihn hier anfragen.')}</div>`}</div>`
     + `<button class="btn btn-primary" style="width:100%;margin-top:14px" disabled>${effLoc(loc)==='geschlossen'?'Zurzeit geschlossen — keine Anfrage möglich':'Angebot vorbereiten'}</button>`;
 }
