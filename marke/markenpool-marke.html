@@ -284,6 +284,11 @@
     background:transparent;font-size:11px;font-weight:800;font-style:normal;line-height:1;
     cursor:pointer;user-select:none;vertical-align:-2px;flex:0 0 auto;
     transition:border-color .12s ease,color .12s ease,background-color .12s ease}
+  /* Das Symbol steht oft in Beschriftungen mit `text-transform:uppercase` und
+     `letter-spacing` (z. B. `.ctr-lbl`). Beides vererbt sich in den Kreis: aus dem
+     kleinen „i" wurde ein großes „I" und der Buchstabenabstand schob es aus der Mitte.
+     Deshalb hier ausdrücklich zurücksetzen. */
+  .dinfo,.info-i{text-transform:none;letter-spacing:0;font-family:inherit}
   .dinfo::before,.info-i::before{content:"";position:absolute;inset:-8px;border-radius:50%}
   .dinfo:hover,.info-i:hover,.dinfo:active,.info-i:active{
     border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
@@ -963,7 +968,16 @@
   .hb-b-ghost:hover{color:var(--text);border-color:var(--border)}
   /* Gegenvorschlag-Popup: Provision UND Erstliefermenge verhandelbar (HP 28.07.) */
   .ctr-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
-  .ctr-lbl{font-size:11.5px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)}
+  /* Beschriftung als Zeile, damit Text, ⓘ und der Rechner-Verweis sauber auf einer
+     Grundlinie sitzen statt über `vertical-align` geschätzt zu werden. */
+  .ctr-lbl{display:flex;align-items:center;gap:6px;min-height:18px;
+    font-size:11.5px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)}
+  .ctr-lbl .info-i{width:15px;height:15px;font-size:10px;border-width:1.2px;vertical-align:0}
+  /* „Rechner" rechts in der Beschriftungszeile — normale Schreibweise, nicht in Versalien. */
+  .ctr-calc{margin-left:auto;text-transform:none;letter-spacing:0;font-size:11.5px;font-weight:700;
+    color:var(--accent-dk);background:none;border:none;padding:0;font-family:inherit;cursor:pointer;
+    display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+  .ctr-calc:hover{text-decoration:underline}
   .ctr-row{display:flex;align-items:center;gap:6px;margin-top:7px}
   .ctr-step{width:32px;padding:0;height:36px;flex:0 0 auto;font-size:15px;color:var(--muted)}
   .ctr-in{width:100%;min-width:0;text-align:center;border:1px solid var(--border);border-radius:9px;height:36px;font-size:15px;font-weight:800;outline:none}
@@ -1456,7 +1470,7 @@
         <div class="req-cart-scroll">
           <div class="req-sum-t">Dein Angebot</div>
           <div class="field">
-            <label>Provision für den Laden <span class="info-i" data-tip-t="Warum nicht &quot;deine Provision&quot;?" data-tip="Das ist der Anteil am Verkaufspreis, den du dem Laden überlässt — Geld, das von dir weggeht. Vorbelegt mit deinem hinterlegten Wert, pro Produkt überschreibbar. Je höher der Satz, desto attraktiver bist du für den Laden.">i</span>
+            <label>Provision für den Laden <span class="info-i" data-tip-t="Wer bekommt diesen Anteil?" data-tip="Der Laden. Von jedem Verkauf behält er diesen Prozentsatz, der Rest geht an dich. Vorbelegt mit deinem hinterlegten Wert, pro Produkt überschreibbar. Je höher der Satz, desto attraktiver bist du für den Laden — und desto weniger bleibt pro Stück bei dir.">i</span>
               <button type="button" class="calc-link" onclick="openRechnerFromComposer()">Rechner öffnen</button></label>
             <div id="reqProvBox"></div>
           </div>
@@ -1501,7 +1515,10 @@
     <div style="font-size:12.5px;color:var(--muted);margin-top:3px" id="hbCtrMeta">—</div>
     <div class="ctr-grid">
       <div>
-        <label class="ctr-lbl">Provision für den Laden <span class="info-i" data-tip-t="Warum nicht &quot;deine Provision&quot;?" data-tip="Das ist der Anteil am Verkaufspreis, den du dem Laden überlässt — Geld, das von dir weggeht. Je höher der Satz, desto attraktiver bist du für den Laden.">i</span></label>
+        <label class="ctr-lbl">Provision für den Laden
+          <span class="info-i" data-tip-t="Wer bekommt diesen Anteil?" data-tip="Der Laden. Von jedem Verkauf behält er diesen Prozentsatz, der Rest geht an dich. Je höher der Satz, desto attraktiver bist du für den Laden — und desto weniger bleibt pro Stück bei dir.">i</span>
+          <button type="button" class="ctr-calc" onclick="openRechnerFromCounter()"><i class="ph ph-calculator"></i> Rechner</button>
+        </label>
         <div class="ctr-row" id="hbCtrProvBox"></div>
       </div>
       <div>
@@ -1539,7 +1556,7 @@
   <div class="mini-head"><h3 id="negTitle">Gegenvorschlag</h3><button class="x" onclick="closeMini('negModal')"><i class="ph ph-x"></i></button></div>
   <div class="mini-body">
     <div id="negProvWrap" class="field">
-      <label>Provision für den Laden (%) <span class="info-i" data-tip-t="Warum nicht &quot;deine Provision&quot;?" data-tip="Der Anteil am Verkaufspreis, den du dem Laden überlässt — Geld, das von dir weggeht.">i</span></label>
+      <label>Provision für den Laden (%) <span class="info-i" data-tip-t="Wer bekommt diesen Anteil?" data-tip="Der Laden. Von jedem Verkauf behält er diesen Prozentsatz, der Rest geht an dich.">i</span></label>
       <input type="number" id="negProv" min="0" max="100" step="1" style="width:120px">
       <div class="hint" id="negProvHint" style="font-size:12px;color:var(--muted);margin-top:5px"></div>
     </div>
@@ -2396,8 +2413,11 @@ function openMarkeDetails(){
 }
 /* Rechner als Popup aus dem Produkt-Edit: der Tab-Inhalt wird umgehängt,
    damit es nur eine Rechner-Instanz mit einem Satz IDs gibt. */
-/* Wohin das Rechner-Ergebnis übernommen wird: 'prod' = Produkt-Edit (UVP + Marge),
-   'composer' = Angebots-Composer (nur die Provision für den Laden). */
+/* Wohin das Rechner-Ergebnis übernommen wird:
+     'prod'           Produkt-Edit im Markenpool (UVP + Marge)
+     'composer'       Angebots-Composer (nur die Provision für den Laden)
+     'gegenvorschlag' Gegenvorschlag-Popup in den Handelsbeziehungen (dito)
+   Es gibt bewusst nur EINEN Rechner: der Tab-Inhalt wandert ins Popup und danach zurück. */
 let _rechnerZiel='prod';
 function openRechnerModal(){
   _rechnerZiel='prod';
@@ -2421,17 +2441,36 @@ function openRechnerFromComposer(){
   const b=document.getElementById('rechnerApplyBtn'); if(b) b.textContent='Provision übernehmen';
   document.getElementById('rechnerModal').classList.add('on-top');
 }
+/* Rechner aus dem Gegenvorschlag heraus (HP 01.08.): bevor die Marke einen Satz nennt,
+   soll sie nachrechnen können, was ihr davon bleibt. Der Verkaufspreis wird aus dem
+   Produkt der Verhandlung vorbelegt, damit der Rechner nicht bei null anfängt. */
+function openRechnerFromCounter(){
+  openRechnerModal();
+  _rechnerZiel='gegenvorschlag';
+  const uvp = _hbCtr && _hbCtr.it ? Number(_hbCtr.it.uvp) : NaN;
+  const vk=document.getElementById('prVk');
+  // Immer setzen, auch auf leer: sonst stünde noch der Preis aus einem vorher
+  // geöffneten Produkt-Edit drin und man rechnete mit der falschen Zahl.
+  if(vk){ vk.value=(isFinite(uvp)&&uvp>0)?prFmt(uvp):''; prRender(); }
+  const b=document.getElementById('rechnerApplyBtn'); if(b) b.textContent='Provision übernehmen';
+  document.getElementById('rechnerModal').classList.add('on-top');
+}
 function closeRechnerModal(){
   const pane=document.getElementById('pane-rechner'), body=document.getElementById('rechnerModalBody');
   while(body.firstChild) pane.appendChild(body.firstChild);
   const m=document.getElementById('rechnerModal'); if(m) m.classList.remove('on-top');
-  // Aus dem Composer heraus darf das Overlay nicht mitverschwinden — der Composer lebt weiter.
-  const weiterOffen = _rechnerZiel==='composer' && document.getElementById('reqModal').classList.contains('open');
   m.classList.remove('open');
-  if(!weiterOffen) document.getElementById('overlay').classList.remove('open');
+  // Das Overlay gehört nicht dem Rechner allein: kam er aus einem anderen Fenster
+  // (Composer, Gegenvorschlag), lebt das weiter und braucht den abgedunkelten Hintergrund.
+  const nochOffen=document.querySelector('.mini.open, .popup.open, .hb-ctr.open');
+  if(!nochOffen) document.getElementById('overlay').classList.remove('open');
   _rechnerZiel='prod';
 }
-function applyRechner(){ return _rechnerZiel==='composer' ? applyRechnerToComposer() : applyRechnerToProd(); }
+function applyRechner(){
+  if(_rechnerZiel==='composer')       return applyRechnerToProv('reqProvStd');
+  if(_rechnerZiel==='gegenvorschlag') return applyRechnerToProv('hbCtrVal');
+  return applyRechnerToProd();
+}
 function applyRechnerToProd(){
   const c=prCalc();
   if(!c.ok||c.negativ){ toast('Der Rechner hat noch kein gültiges Ergebnis'); return; }
@@ -2440,11 +2479,13 @@ function applyRechnerToProd(){
   document.getElementById('edMarge').value=Math.round(c.pct);
   closeRechnerModal(); toast('UVP & Marge übernommen');
 }
-function applyRechnerToComposer(){
+/* Übernimmt nur den Prozentsatz in ein Provisionsfeld — für Composer und
+   Gegenvorschlag identisch, nur die Ziel-ID unterscheidet sich. */
+function applyRechnerToProv(feldId){
   const c=prCalc();
   if(!c.ok||c.negativ){ toast('Der Rechner hat noch kein gültiges Ergebnis'); return; }
-  const el=document.getElementById('reqProvStd');
-  if(el){ el.value=Math.round(c.pct); el.dispatchEvent(new Event('input',{bubbles:true})); }
+  const el=document.getElementById(feldId);
+  if(el){ el.value=Math.round(c.pct); el.dispatchEvent(new Event('input',{bubbles:true})); el.dispatchEvent(new Event('change',{bubbles:true})); }
   closeRechnerModal(); toast('Provision übernommen: '+Math.round(c.pct)+' %');
 }
 function syncAll(){ renderProfile(); renderPoolPreview(); if(document.getElementById('poolModal').classList.contains('open')) renderPool(); }
