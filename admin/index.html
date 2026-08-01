@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spreat Admin — Markenpool 2.0</title>
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<style>
+  :root{--bg:#f6f7f9;--card:#fff;--text:#16181d;--muted:#6b7280;--border:#e6e8ec;--accent:#2CB461;--accent-d:#218a4b;--amber:#e0a021;--amber-bg:#fbf1da;--red:#d64545;--red-bg:#fdecec;--blue:#2f6fed;--blue-bg:#eaf1ff;--grey:#9aa0a8;--grey-bg:#f0f1f3;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:14px}
+  .wrap{max-width:1320px;margin:0 auto;padding:18px 18px 60px}
+  .top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  h1{font-size:20px;margin:0;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+  .sub{color:var(--muted);font-size:13px;margin:2px 0 14px}
+  #acct{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+  #status{font-size:12.5px;padding:8px 12px;border-radius:9px;margin:0 0 14px;display:none}
+  #status.info{display:block;background:#eef4ff;border:1px solid #cfe0fb;color:#1f4a8a}
+  #status.ok{display:block;background:#e3f6ec;border:1px solid #bfe6cf;color:var(--accent-d)}
+  #status.err{display:block;background:var(--red-bg);border:1px solid #f0c9c9;color:#a3282a}
+  .tabs{display:flex;gap:6px;border-bottom:1px solid var(--border);margin-bottom:14px;flex-wrap:wrap}
+  .tab{background:none;border:none;padding:10px 14px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1px;font-family:inherit;display:flex;align-items:center;gap:7px}
+  .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+  .tab .cnt{display:inline-block;background:var(--bg);border:1px solid var(--border);border-radius:999px;font-size:11px;font-weight:700;padding:1px 7px;color:var(--muted)}
+  .tab.active .cnt{background:var(--accent);border-color:var(--accent);color:#fff}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+  .toolbar input[type=search]{flex:1;min-width:200px;padding:9px 12px;border:1px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;background:#fff}
+  .toolbar select{padding:9px 12px;border:1px solid var(--border);border-radius:10px;font-size:13.5px;font-family:inherit;background:#fff;color:inherit;max-width:230px}
+  .seg{display:inline-flex;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+  .seg button{background:#fff;border:none;padding:8px 12px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit;border-left:1px solid var(--border)}
+  .seg button:first-child{border-left:none}
+  .seg button.on{background:#e3f6ec;color:var(--accent-d)}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+  table{width:100%;border-collapse:collapse}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;font-size:13px}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600;background:#fbfbfc}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#fcfcfd}
+  .nm{font-weight:600}.mono{font-variant-numeric:tabular-nums}.muted{color:var(--muted)}
+  .pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 9px;font-size:11.5px;font-weight:700;border:1px solid var(--border);background:#fff;color:var(--muted);cursor:pointer;font-family:inherit}
+  .pill.on{background:#e3f6ec;border-color:#bfe6cf;color:var(--accent-d)}
+  .pill.off{background:#f3f4f6;color:#9aa0a8}
+  .pill.warn{background:var(--amber-bg);border-color:#eeddb0;color:#8a5a00}
+  .pill.static{cursor:default}
+  .badge{display:inline-flex;align-items:center;gap:5px;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700}
+  .b-green{background:#e3f6ec;color:var(--accent-d)}.b-amber{background:var(--amber-bg);color:#8a5a00}.b-red{background:var(--red-bg);color:#a3282a}.b-blue{background:var(--blue-bg);color:#2657c0}.b-grey{background:var(--grey-bg);color:#5b6067}
+  .dir{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--muted)}
+  .act{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+  .btn{border:1px solid var(--border);background:#fff;border-radius:8px;padding:7px 12px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--text);white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+  .btn:hover{background:#f6f7f9}
+  .btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}.btn.pri:hover{background:var(--accent-d)}
+  .btn.danger{color:var(--red);border-color:#f0c9c9}.btn.danger:hover{background:var(--red-bg)}
+  .btn.tiny{padding:4px 8px;font-size:11.5px}
+  .empty,.gate{padding:34px;text-align:center;color:var(--muted)}
+  .stat{color:var(--muted);font-size:12px;margin:10px 2px 0}
+  /* Aktivität: Trichter je Rolle */
+  .funnels{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:12px;margin-bottom:16px}
+  .funnel{background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px 16px}
+  .funnel h4{margin:0 0 11px;font-size:13px;display:flex;align-items:center;gap:7px}
+  .funnel h4 .tot{margin-left:auto;font-weight:600;color:var(--muted);font-size:12px}
+  .fstep{display:grid;grid-template-columns:150px 1fr 62px;gap:10px;align-items:center;margin-bottom:7px}
+  .fstep span{font-size:12px;color:var(--muted)}
+  .fbar{height:9px;border-radius:999px;background:#eef0f2;overflow:hidden}
+  .fbar i{display:block;height:100%;border-radius:999px;background:var(--accent)}
+  .fstep b{font-size:12.5px;text-align:right;font-variant-numeric:tabular-nums}
+  .fstep.dim .fbar i{background:#c3cbd4}
+  .kpis{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .kpi{background:#fff;border:1px solid var(--border);border-radius:12px;padding:10px 14px;min-width:120px}
+  .kpi b{font-size:20px;display:block;line-height:1.1}.kpi span{font-size:11.5px;color:var(--muted)}
+  .ov{position:fixed;inset:0;background:rgba(16,18,29,.45);display:none;align-items:flex-start;justify-content:center;z-index:50;padding:28px 16px;overflow-y:auto}
+  .ov.open{display:flex}
+  .modal{background:#fff;border-radius:16px;width:min(720px,96vw);box-shadow:0 30px 80px rgba(16,18,29,.4);margin:auto}
+  .modal.sm{width:min(460px,96vw)}
+  .modal.lg{width:min(900px,96vw)}
+  /* Anfrage-Detail */
+  .rq-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:720px){.rq-grid{grid-template-columns:1fr}}
+  .rq-card{border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+  .rq-card h4{margin:0 0 2px;font-size:14px;display:flex;align-items:center;gap:6px}
+  .rq-kv{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12.5px}
+  .rq-kv:last-child{border-bottom:none}
+  .rq-kv span:first-child{color:var(--muted)}
+  .rq-kv span:last-child{text-align:right;font-weight:600}
+  .rq-msg{border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.5;background:var(--bg)}
+  .rq-pos{width:100%;border-collapse:collapse;font-size:12.5px}
+  .rq-pos th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#b6bcc4;padding:6px 8px;border-bottom:1px solid var(--border)}
+  .rq-pos td{padding:7px 8px;border-bottom:1px solid var(--border);vertical-align:middle}
+  .rq-pos img{width:34px;height:34px;object-fit:cover;border-radius:6px;border:1px solid var(--border);background:#fff}
+  .mhead{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--border)}
+  .mhead h3{margin:0;font-size:16px}
+  .mhead .x{margin-left:auto;background:var(--bg);border:none;width:30px;height:30px;border-radius:8px;font-size:15px;cursor:pointer;color:var(--muted)}
+  .mbody{padding:16px 20px;max-height:66vh;overflow-y:auto}
+  .mfoot{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
+  .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .field{display:flex;flex-direction:column;gap:4px}.field.full{grid-column:1/-1}
+  .field label{font-size:12px;color:var(--muted);font-weight:600}
+  .field input,.field select,.field textarea{padding:8px 10px;border:1px solid var(--border);border-radius:9px;font-size:13.5px;font-family:inherit;background:#fff;width:100%}
+  .field textarea{min-height:70px;resize:vertical}
+  .sec-t{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#b6bcc4;font-weight:800;margin:16px 0 2px;grid-column:1/-1}
+  .warnbox{background:var(--red-bg);border:1px solid #f0c9c9;border-radius:10px;padding:12px 14px;font-size:13px;color:#a3282a;margin-bottom:12px;line-height:1.5}
+  .infobox{background:var(--blue-bg);border:1px solid #cfe0fb;border-radius:10px;padding:11px 14px;font-size:12.5px;color:#2657c0;line-height:1.5;margin-bottom:12px}
+  .prod{display:flex;flex-direction:column;gap:2px;border-top:1px solid var(--border);padding:8px 0}
+  .prod .h{display:flex;align-items:center;gap:8px;justify-content:space-between}
+  .verl{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#16181d;color:#fff;padding:10px 18px;border-radius:10px;font-size:13.5px;font-weight:600;z-index:80;opacity:0;transition:opacity .2s;pointer-events:none}
+  .toast.show{opacity:1}.toast.err{background:#a3282a}
+  #login{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:flex-start;justify-content:center;padding:9vh 16px;overflow-y:auto}
+  #login .box{background:#fff;border:1px solid var(--border);border-radius:16px;padding:26px 24px;width:min(420px,96vw);box-shadow:0 10px 30px rgba(16,18,29,.07)}
+  #login h2{font-size:19px;margin:0 0 6px}#login p{color:var(--muted);font-size:13.5px;line-height:1.55;margin:0 0 16px}
+  #login input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit}
+  #login .btn{width:100%;margin-top:12px;justify-content:center}
+  @media(max-width:660px){.fgrid{grid-template-columns:1fr}.hide-sm{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1><i class="ph ph-shield-check" style="color:var(--accent)"></i> Spreat Admin — Markenpool 2.0</h1><p class="sub">Direkt aus Supabase (RLS, Login mit jeder @spreat.com-Adresse, kein Service-Key). Bearbeiten &amp; Löschen wirkt sofort.</p></div>
+    <div id="acct"></div>
+  </div>
+  <div id="status"></div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-tab="marken" onclick="switchTab('marken')"><i class="ph ph-package"></i> Marken <span class="cnt" id="cntMarken">–</span></button>
+    <button class="tab" data-tab="haendler" onclick="switchTab('haendler')"><i class="ph ph-storefront"></i> Einzelhändler <span class="cnt" id="cntHaendler">–</span></button>
+    <button class="tab" data-tab="gruppen" onclick="switchTab('gruppen')"><i class="ph ph-buildings"></i> Gruppen <span class="cnt" id="cntGruppen">–</span></button>
+    <button class="tab" data-tab="anfragen" onclick="switchTab('anfragen')"><i class="ph ph-arrows-left-right"></i> Anfragen &amp; Freigabe <span class="cnt" id="cntAnfragen">–</span></button>
+    <button class="tab" data-tab="aktivitaet" onclick="switchTab('aktivitaet')"><i class="ph ph-pulse"></i> Aktivität <span class="cnt" id="cntAktiv">–</span></button>
+    <button class="tab" data-tab="ablehnungen" onclick="switchTab('ablehnungen')"><i class="ph ph-prohibit"></i> Ablehnungen <span class="cnt" id="cntAblehn">–</span></button>
+    <button class="tab" data-tab="suchanfragen" onclick="switchTab('suchanfragen')"><i class="ph ph-magnifying-glass"></i> Suchanfragen <span class="cnt" id="cntSuche">–</span></button>
+    <button class="tab" data-tab="faq" onclick="switchTab('faq')"><i class="ph ph-question"></i> Fragen <span class="cnt" id="cntFaq">–</span></button>
+  </div>
+
+  <!-- MARKEN -->
+  <div class="pane" id="pane-marken">
+    <div class="seg" style="margin-bottom:12px">
+      <button id="segLive" class="on" onclick="setMarkenView('live')">Im Brandpool <b id="segLiveCnt">–</b></button>
+      <button id="segSignup" onclick="setMarkenView('signup')">n8n-Anmeldungen <b id="segSignupCnt">–</b></button>
+    </div>
+    <div class="toolbar">
+      <input type="search" id="qMarken" placeholder="Marke, ID oder E-Mail suchen …" oninput="renderMarken()">
+      <div class="seg" id="fltMarken">
+        <button class="on" data-f="alle" onclick="setMarkenFilter('alle',this)">Alle</button>
+        <button data-f="sichtbar" onclick="setMarkenFilter('sichtbar',this)">Sichtbar</button>
+        <button data-f="versteckt" onclick="setMarkenFilter('versteckt',this)">Versteckt</button>
+        <button data-f="wartet" onclick="setMarkenFilter('wartet',this)">Login offen</button>
+      </div>
+    </div>
+    <div class="card"><div id="markenTable"><div class="gate">Lade …</div></div></div>
+    <div class="stat" id="markenStat"></div>
+  </div>
+
+  <!-- HAENDLER -->
+  <div class="pane" id="pane-haendler" style="display:none">
+    <div class="toolbar">
+      <input type="search" id="qHaendler" placeholder="Händler, E-Mail oder Ort suchen …" oninput="renderHaendler()">
+      <div class="seg" id="fltHaendler">
+        <button class="on" data-f="alle" onclick="setHaendlerFilter('alle',this)">Alle</button>
+        <button data-f="aktiv" onclick="setHaendlerFilter('aktiv',this)">Aktiv</button>
+        <button data-f="inaktiv" onclick="setHaendlerFilter('inaktiv',this)">Deaktiviert</button>
+        <button data-f="verifiziert" onclick="setHaendlerFilter('verifiziert',this)">Verifiziert</button>
+        <button data-f="offen" onclick="setHaendlerFilter('offen',this)">Offen</button>
+      </div>
+    </div>
+    <div class="card"><div id="haendlerTable"><div class="gate">Lade …</div></div></div>
+    <div class="stat" id="haendlerStat"></div>
+  </div>
+
+  <!-- GRUPPEN -->
+  <div class="pane" id="pane-gruppen" style="display:none">
+    <div class="infobox"><i class="ph ph-info"></i> Unternehmensgruppen bündeln mehrere Standorte (z. B. Freenet mit 419 Standorten = ein Sammel-Account). <b>Login ist vorbereitet, aber inaktiv</b> — eine Gruppe loggt sich aktuell nicht selbst ein; Anfragen laufen über Spreat. Zum Aktivieren später: Login-E-Mail eintragen + „Login frei" schalten.</div>
+    <div class="card"><div id="gruppenTable"><div class="gate">Lade …</div></div></div>
+    <div class="stat" id="gruppenStat"></div>
+  </div>
+
+  <!-- ANFRAGEN -->
+  <div class="pane" id="pane-anfragen" style="display:none">
+    <div class="infobox"><i class="ph ph-shield"></i> <b>Freigabe-Gate (Anti-Spam):</b> Jede Anfrage geht zuerst an Spreat. Die Gegenseite sieht sie erst nach <b>Freigeben</b>. Bis dahin steht dort „in Prüfung bei Spreat".</div>
+    <div class="toolbar">
+      <div class="seg" id="fltDir">
+        <button class="on" data-d="alle" onclick="setDir('alle',this)">Beide Richtungen</button>
+        <button data-d="lm" onclick="setDir('lm',this)">Laden → Marke</button>
+        <button data-d="ml" onclick="setDir('ml',this)">Marke → Laden</button>
+      </div>
+      <div class="seg" id="fltFreigabe">
+        <button class="on" data-f="ausstehend" onclick="setFreigabeFilter('ausstehend',this)">Ausstehend</button>
+        <button data-f="frei" onclick="setFreigabeFilter('frei',this)">Freigegeben</button>
+        <button data-f="abgelehnt" onclick="setFreigabeFilter('abgelehnt',this)">Abgelehnt</button>
+        <button data-f="match" onclick="setFreigabeFilter('match',this)">Matches</button>
+        <button data-f="alle" onclick="setFreigabeFilter('alle',this)">Alle</button>
+      </div>
+    </div>
+    <div class="card"><div id="anfragenTable"><div class="gate">Lade …</div></div></div>
+    <div class="stat" id="anfragenStat"></div>
+  </div>
+
+  <!-- AKTIVITÄT -->
+  <div class="pane" id="pane-aktivitaet" style="display:none">
+    <div class="infobox"><i class="ph ph-pulse"></i>
+      <b>Wer nutzt uns wirklich?</b> Alle Zahlen kommen aus Datenbank-Triggern — Logins und
+      Handlungen (Profil, Beschreibung, Bestseller, Produkte, Anfragen, Verhandlungen, Nachrichten).
+      Ereignisse werden ab dem 31.07.2026 gesammelt; ältere Handlungen fehlen deshalb.
+      Spreat-eigene Zugriffe zählen nicht als Partner-Aktivität.
+    </div>
+
+    <div class="funnels" id="funnelBox"><div class="gate">Lade …</div></div>
+
+    <div class="toolbar">
+      <div class="seg" id="fltAktRolle">
+        <button class="on" data-r="alle" onclick="setAktRolle('alle',this)">Läden &amp; Marken</button>
+        <button data-r="laden" onclick="setAktRolle('laden',this)">Nur Läden</button>
+        <button data-r="marke" onclick="setAktRolle('marke',this)">Nur Marken</button>
+      </div>
+      <div class="seg" id="fltAktStufe">
+        <button class="on" data-s="relevant" onclick="setAktStufe('relevant',this)">Mit Account</button>
+        <button data-s="handlungsbedarf" onclick="setAktStufe('handlungsbedarf',this)">Handlungsbedarf</button>
+        <button data-s="aktiv" onclick="setAktStufe('aktiv',this)">Aktiv</button>
+        <button data-s="alle" onclick="setAktStufe('alle',this)">Alle</button>
+      </div>
+      <input type="search" id="qAktiv" placeholder="Name oder E-Mail …" oninput="renderAktiv()">
+    </div>
+
+    <div class="card"><div id="aktivTable"><div class="gate">Lade …</div></div></div>
+    <div class="stat" id="aktivStat"></div>
+
+    <h3 style="font-size:14px;margin:22px 2px 10px">Letzte Ereignisse</h3>
+    <div class="card"><div id="eventTable"><div class="gate">Lade …</div></div></div>
+  </div>
+
+  <!-- ABLEHNUNGEN -->
+  <div class="pane" id="pane-ablehnungen" style="display:none">
+    <div class="infobox"><i class="ph ph-info"></i>
+      <b>Warum wurde abgelehnt?</b> Der Grund ist <b>intern</b> — er geht an uns, nicht an die
+      Gegenseite. Interessant ist nicht die einzelne Zeile, sondern die Wiederholung:
+      dreimal „Marge zu gering" bei derselben Marke ist eine Preisverhandlung, kein Zufall.
+      Die Benachrichtigungsmail verlinkt nur hierher; diese Liste ist die Ablage.
+    </div>
+    <div id="ablJeMarke" class="funnels" style="margin-bottom:12px"></div>
+    <div class="toolbar">
+      <select id="ablMarke" onchange="loadAblehnungen()"><option value="">Alle Marken</option></select>
+      <select id="ablLaden" onchange="loadAblehnungen()"><option value="">Alle Läden</option></select>
+      <div class="seg" id="fltAblZeit">
+        <button class="on" data-t="alle" onclick="setAblZeit('alle',this)">Gesamter Zeitraum</button>
+        <button data-t="30" onclick="setAblZeit('30',this)">Letzte 30 Tage</button>
+        <button data-t="90" onclick="setAblZeit('90',this)">Letzte 90 Tage</button>
+      </div>
+      <input type="search" id="qAbl" placeholder="Im Grund oder Produkt suchen …" oninput="renderAblehnungen()">
+    </div>
+    <div class="card"><div id="ablTable"><div class="gate">Lade …</div></div></div>
+    <div class="stat" id="ablStat"></div>
+  </div>
+
+  <!-- SUCHANFRAGEN -->
+  <div class="pane" id="pane-suchanfragen" style="display:none">
+    <div class="infobox"><i class="ph ph-info"></i>
+      <b>Wonach wird gesucht — und was finden wir nicht?</b> Suchen <b>ohne Treffer</b> stehen
+      oben. Das ist die Liste der Marken, die uns fehlen, und der wertvollste Teil dieser Ansicht.
+      Die Suche wird <b>anonym</b> protokolliert (Entscheidung HP, 31.07.2026): wir sehen den
+      Begriff, nicht wer ihn gesucht hat.
+    </div>
+    <div class="toolbar">
+      <div class="seg" id="fltSuchZeit">
+        <button class="on" data-t="alle" onclick="setSuchZeit('alle',this)">Gesamter Zeitraum</button>
+        <button data-t="7" onclick="setSuchZeit('7',this)">Letzte 7 Tage</button>
+        <button data-t="30" onclick="setSuchZeit('30',this)">Letzte 30 Tage</button>
+      </div>
+      <div class="seg" id="fltSuchTreffer">
+        <button class="on" data-f="alle" onclick="setSuchTreffer('alle',this)">Alle Begriffe</button>
+        <button data-f="ohne" onclick="setSuchTreffer('ohne',this)">Nur ohne Treffer</button>
+      </div>
+      <input type="search" id="qSuche" placeholder="Begriff suchen …" oninput="renderSuchanfragen()">
+    </div>
+    <div class="card"><div id="suchTable"><div class="gate">Lade …</div></div></div>
+    <div class="stat" id="suchStat"></div>
+  </div>
+
+  <!-- FAQ-FRAGEN -->
+  <div class="pane" id="pane-faq" style="display:none">
+    <div class="infobox"><i class="ph ph-info"></i>
+      Fragen aus dem FAQ landen seit dem 31.07.2026 in der Datenbank statt im
+      <span class="mono">mailto:</span>-Rückfall. Parallel geht eine Mail an
+      <b>hello@spreat.com</b>; ein Reply darauf erreicht direkt den Fragenden, denn die
+      Antwortadresse steht als <span class="mono">Reply-To</span> drin.
+    </div>
+    <div class="toolbar">
+      <div class="seg" id="fltFaq">
+        <button class="on" data-f="offen" onclick="setFaqFilter('offen',this)">Offen</button>
+        <button data-f="alle" onclick="setFaqFilter('alle',this)">Alle</button>
+      </div>
+      <input type="search" id="qFaq" placeholder="Frage oder Adresse suchen …" oninput="renderFaq()">
+    </div>
+    <div class="card"><div id="faqTable"><div class="gate">Lade …</div></div></div>
+    <div class="stat" id="faqStat"></div>
+  </div>
+</div>
+
+<div class="ov" id="editOv"><div class="modal"><div class="mhead"><h3 id="editTitle">Bearbeiten</h3><button class="x" onclick="closeEdit()"><i class="ph ph-x"></i></button></div><div class="mbody"><div class="fgrid" id="editForm"></div></div><div class="mfoot" id="editFoot"><button class="btn" onclick="closeEdit()">Abbrechen</button><button class="btn pri" onclick="saveEdit()"><i class="ph ph-check"></i> Speichern</button></div></div></div>
+<!-- ANFRAGE-DETAIL: komplette Anfrage + Profil des Absenders, Freigabe direkt daraus -->
+<div class="ov" id="reqOv"><div class="modal lg">
+  <div class="mhead"><h3 id="reqTitle">Anfrage</h3><button class="x" onclick="closeReq()"><i class="ph ph-x"></i></button></div>
+  <div class="mbody" id="reqBody"><div class="gate">Lade …</div></div>
+  <div class="mfoot" id="reqFoot"></div>
+</div></div>
+
+<div class="ov" id="confOv"><div class="modal sm"><div class="mhead"><h3 id="confTitle">Bestätigen</h3><button class="x" onclick="closeConf()"><i class="ph ph-x"></i></button></div><div class="mbody" id="confBody"></div><div class="mfoot"><button class="btn" onclick="closeConf()">Abbrechen</button><button class="btn danger" id="confBtn">Löschen</button></div></div></div>
+<div class="toast" id="toast"></div>
+
+<div id="login"><div class="box">
+  <h2>Spreat Admin-Login</h2>
+  <p>Nur für das Spreat-Team.</p>
+  <!-- Passwort-Login (in Chrome speicherbar) -->
+  <form id="lgMain" onsubmit="adminPwLogin();return false" autocomplete="on">
+    <div class="field"><label>E-Mail</label><input type="email" id="lgMail" name="username" autocomplete="username" placeholder="vorname@spreat.com"></div>
+    <div class="field"><label>Passwort</label><input type="password" id="lgPass" name="password" autocomplete="current-password" placeholder="••••••••"></div>
+    <div id="lgErr1" style="color:#a3282a;font-size:13px;margin-top:8px;display:none"></div>
+    <button class="btn pri" id="lgPwBtn" type="submit" style="width:100%">Anmelden</button>
+    <button class="btn" type="button" style="width:100%;margin-top:8px" id="lgSend" onclick="adminSend()">Stattdessen Code per E-Mail</button>
+    <div style="font-size:12px;color:#8a8f98;margin-top:10px">Noch kein Passwort? Einmal per Code anmelden und dann oben rechts „Passwort" festlegen — danach bietet Chrome das Speichern an.</div>
+  </form>
+  <div id="lgS2" style="display:none">
+    <div class="field"><label>Code aus der E-Mail an <b id="lgSent"></b></label><input id="lgCode" inputmode="numeric" maxlength="6" placeholder="······" style="text-align:center;font-size:20px;letter-spacing:8px"></div>
+    <div id="lgErr2" style="color:#a3282a;font-size:13px;margin-top:8px;display:none"></div>
+    <button class="btn pri" id="lgVerify" onclick="adminVerify()">Anmelden</button>
+    <button class="btn" style="width:100%;margin-top:8px" onclick="document.getElementById('lgS2').style.display='none';document.getElementById('lgMain').style.display=''">← zurück</button>
+  </div>
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SB_URL='https://lzgrcnkatchkrvlrjnxa.supabase.co';
+const SB_KEY='sb_publishable_L0JTr0QFuUMiS5S5JPCPig_auZT1zZF';
+/* Admin-Zugang: die ganze @spreat.com-Domain (Entscheidung HP, 01.08.2026).
+   Vorher stand hier eine feste Liste aus vier Adressen — neue Kolleginnen und
+   Kollegen bekamen „Diese E-Mail ist nicht als Spreat-Admin hinterlegt".
+   Diese Prüfung ist NUR Bequemlichkeit: sie spart den vergeblichen Anmeldeversuch.
+   Die eigentliche Grenze zieht die Datenbank über `is_spreat_admin()`
+   (sql/2026-08-01_admin_ganze_domain.sql) — wer hier vorbeikäme, bekäme dort
+   trotzdem nichts zu sehen. */
+const ADMIN_DOMAIN = '@spreat.com';
+let sb=null;
+let brands=[],signups=[],retailers=[],groups=[],reqs=[],brandReqs=[],loaded=false;
+let markenView='live',markenFilter='alle',haendlerFilter='alle',dir='alle',freigabeFilter='ausstehend';
+// Die drei neuen Panes laden erst beim ersten Öffnen (null = noch nie geladen).
+let ablData=null, suchData=null, faqData=null;
+let ablZeit='alle', suchZeit='alle', suchTreffer='alle', faqFilter='offen';
+
+function hh(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function toast(m,err){const t=document.getElementById('toast');t.textContent=m;t.className='toast show'+(err?' err':'');setTimeout(()=>t.className='toast',2600);}
+function fmtDate(s){if(!s)return'';const d=new Date(s);return isNaN(d)?'':d.toLocaleDateString('de-DE');}
+function setStatus(msg,type){const s=document.getElementById('status');if(!msg){s.style.display='none';return;}s.textContent=msg;s.className=type||'info';s.style.display='block';}
+
+if(typeof supabase==='undefined'){ setStatus('Supabase-Bibliothek nicht geladen — Internet/CDN prüfen.','err'); }
+else{
+  // EIGENER Session-Speicher fürs Admin-Tool: unabhängig von Marke/Händler (gleiches Supabase-Projekt,
+  // aber andere storageKey) → Impersonation/Logout in den anderen Apps wirft den Admin NICHT mehr raus.
+  sb=supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:'spreat-admin-auth',persistSession:true,autoRefreshToken:true}});
+  boot();
+}
+
+async function boot(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(session && isAdminMail(session.user.email)){ showApp(session.user.email); loadData(); }
+}
+function isAdminMail(m){ return (m||'').trim().toLowerCase().endsWith(ADMIN_DOMAIN); }
+async function adminPwLogin(){
+  const mail=(document.getElementById('lgMail').value||'').trim().toLowerCase();
+  const pass=document.getElementById('lgPass').value||'';
+  const err=document.getElementById('lgErr1'); err.style.display='none';
+  if(!isAdminMail(mail)){ err.textContent='Der Admin ist dem Spreat-Team vorbehalten — bitte deine @spreat.com-Adresse nutzen.'; err.style.display='block'; return; }
+  if(!pass){ err.textContent='Bitte Passwort eingeben.'; err.style.display='block'; return; }
+  const btn=document.getElementById('lgPwBtn'); btn.disabled=true; btn.textContent='Anmelden …';
+  const {data,error}=await sb.auth.signInWithPassword({email:mail,password:pass});
+  btn.disabled=false; btn.textContent='Anmelden';
+  if(error){ err.innerHTML='Login fehlgeschlagen. Falls du noch kein Passwort hast: unten „Code per E-Mail" nutzen und danach oben „Passwort" festlegen.'; err.style.display='block'; return; }
+  if(!isAdminMail(data.user.email)){ await sb.auth.signOut(); err.textContent='Kein Admin-Konto.'; err.style.display='block'; return; }
+  showApp(data.user.email); loadData();
+}
+async function adminSend(){
+  const mail=(document.getElementById('lgMail').value||'').trim().toLowerCase();
+  const err=document.getElementById('lgErr1');
+  if(!isAdminMail(mail)){ err.textContent='Der Admin ist dem Spreat-Team vorbehalten — bitte deine @spreat.com-Adresse nutzen.'; err.style.display='block'; return; }
+  err.style.display='none'; const btn=document.getElementById('lgSend'); btn.disabled=true; btn.textContent='Sende …';
+  const {error}=await sb.auth.signInWithOtp({email:mail});
+  btn.disabled=false; btn.textContent='Stattdessen Code per E-Mail';
+  if(error){ err.textContent='Fehler: '+error.message; err.style.display='block'; return; }
+  document.getElementById('lgSent').textContent=mail; document.getElementById('lgMain').style.display='none'; document.getElementById('lgS2').style.display=''; document.getElementById('lgCode').focus();
+}
+async function adminSetPassword(){
+  const p=prompt('Neues Admin-Passwort festlegen (mind. 8 Zeichen).\nBeim nächsten Login mit E-Mail + Passwort bietet Chrome das Speichern an:');
+  if(p==null) return;
+  if(p.length<8){ toast('Mindestens 8 Zeichen.',true); return; }
+  const {error}=await sb.auth.updateUser({password:p});
+  if(error){ toast('Fehlgeschlagen: '+error.message,true); return; }
+  toast('Passwort gesetzt. Ab jetzt E-Mail + Passwort nutzen.');
+}
+async function adminVerify(){
+  const mail=(document.getElementById('lgMail').value||'').trim().toLowerCase();
+  const code=(document.getElementById('lgCode').value||'').trim();
+  const err=document.getElementById('lgErr2'); const btn=document.getElementById('lgVerify'); btn.disabled=true; btn.textContent='Prüfe …';
+  let r=await sb.auth.verifyOtp({email:mail,token:code,type:'email'});
+  if(r.error) r=await sb.auth.verifyOtp({email:mail,token:code,type:'signup'});
+  btn.disabled=false; btn.textContent='Anmelden';
+  if(r.error){ err.textContent='Code ungültig oder abgelaufen.'; err.style.display='block'; return; }
+  showApp(mail); loadData();
+}
+function showApp(mail){
+  document.getElementById('login').style.display='none';
+  document.getElementById('acct').innerHTML='<span>'+hh(mail)+'</span>'
+    +'<button class="btn tiny" onclick="adminSetPassword()"><i class="ph ph-key"></i> Passwort</button>'
+    +'<button class="btn tiny" onclick="adminLogout()"><i class="ph ph-sign-out"></i> Abmelden</button>';
+}
+async function adminLogout(){ try{ await sb.auth.signOut(); }catch(e){} location.reload(); }
+// Impersonation: als Admin ins echte Profil springen. ?admin_as ist nur ein Ziel-Schalter;
+// RLS (is_spreat_admin) entscheidet, ob wirklich geladen/geschrieben werden darf.
+function openAs(kind,id){
+  const base=kind==='marke'?'../marke/markenpool-marke.html':'../einzelhaendler/prepage-einzelhaendler.html';
+  const w=window.open('about:blank','_blank'); // synchron im Klick -> kein Popup-Blocker
+  // Admin-Session-Tokens im URL-Hash mitgeben, damit die Profilseite sie via setSession()
+  // übernehmen kann - auch unter file://, wo localStorage NICHT geteilt wird. Kein Service-Key.
+  sb.auth.getSession().then(({data})=>{
+    const s=data&&data.session; let url=base+'?admin_as='+encodeURIComponent(id);
+    if(s&&s.access_token&&s.refresh_token) url+='#at='+encodeURIComponent(s.access_token)+'&rt='+encodeURIComponent(s.refresh_token);
+    if(w) w.location.href=url; else window.open(url,'_blank');
+  }).catch(()=>{ const u=base+'?admin_as='+encodeURIComponent(id); if(w) w.location.href=u; });
+}
+
+async function loadData(){
+  setStatus('Lade Daten …','info');
+  const {data,error}=await sb.rpc('admin_overview');
+  if(error){ setStatus('Fehler: '+error.message+(error.message.includes('not_authorized')?' (kein Admin)':''),'err'); return; }
+  brands=data.brands||[]; signups=data.signups||[]; retailers=data.retailers||[]; groups=data.groups||[]; reqs=data.reqs||[]; brandReqs=data.brand_reqs||[]; loaded=true;
+  updateCounts(); renderMarken(); renderHaendler(); renderGruppen(); renderAnfragen();
+  setStatus('Geladen: '+brands.length+' Marken · '+retailers.length+' Händler · '+groups.length+' Gruppen · '+(reqs.length+brandReqs.length)+' Anfragen.','ok');
+  setTimeout(()=>setStatus('',null),3500);
+  openReqFromHash();   // Deep-Link aus der Benachrichtigungs-Mail
+  oeffnePaneAusHash(); // #ablehnungen / #faq= aus den neuen Mails
+  const z=data.zaehler||{};
+  document.getElementById('cntAblehn').textContent=z.ablehnungen!=null?z.ablehnungen:'–';
+  document.getElementById('cntSuche').textContent =z.suchanfragen!=null?z.suchanfragen:'–';
+  document.getElementById('cntFaq').textContent   =z.faq_offen!=null?z.faq_offen:'–';
+}
+function pendingCount(){ return reqs.filter(r=>r.freigabe==='ausstehend').length + brandReqs.filter(r=>r.freigabe==='ausstehend').length; }
+function updateCounts(){
+  document.getElementById('cntMarken').textContent=brands.length;
+  document.getElementById('cntHaendler').textContent=retailers.length;
+  document.getElementById('cntGruppen').textContent=groups.length;
+  document.getElementById('cntAnfragen').textContent=pendingCount();
+  document.getElementById('segLiveCnt').textContent=brands.length;
+  document.getElementById('segSignupCnt').textContent=signups.length;
+}
+function switchTab(t){ document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===t)); ['marken','haendler','gruppen','anfragen','aktivitaet','ablehnungen','suchanfragen','faq'].forEach(p=>document.getElementById('pane-'+p).style.display=p===t?'':'none');
+  if(t==='aktivitaet'   && !aktivGeladen) loadAktivitaet();
+  if(t==='ablehnungen'  && ablData===null) loadAblehnungen();
+  if(t==='suchanfragen' && suchData===null) loadSuchanfragen();
+  if(t==='faq'          && faqData===null) loadFaq(); }
+function setMarkenView(v){markenView=v;document.getElementById('segLive').classList.toggle('on',v==='live');document.getElementById('segSignup').classList.toggle('on',v==='signup');document.getElementById('fltMarken').style.visibility=v==='live'?'visible':'hidden';renderMarken();}
+function setMarkenFilter(f,el){markenFilter=f;el.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===el));renderMarken();}
+function setHaendlerFilter(f,el){haendlerFilter=f;el.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===el));renderHaendler();}
+function setDir(d,el){dir=d;el.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===el));renderAnfragen();}
+function setFreigabeFilter(f,el){freigabeFilter=f;el.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===el));renderAnfragen();}
+
+/* ---------- MARKEN ---------- */
+function renderMarken(){
+  const box=document.getElementById('markenTable'),stat=document.getElementById('markenStat');
+  if(!loaded){box.innerHTML='<div class="gate">Lade …</div>';return;}
+  if(markenView==='signup')return renderSignups(box,stat);
+  const q=(document.getElementById('qMarken').value||'').toLowerCase();
+  let rows=brands.filter(b=>{
+    if(markenFilter==='sichtbar'&&b.sichtbar===false)return false;
+    if(markenFilter==='versteckt'&&b.sichtbar!==false)return false;
+    if(markenFilter==='wartet'){if(!b.login_email)return false;if(b.login_freigegeben)return false;}
+    if(q){const s=(b.name+' '+b.marken_id+' '+(b.kontakt_email||'')+' '+(b.login_email||'')).toLowerCase();if(!s.includes(q))return false;}
+    return true;
+  });
+  if(!rows.length){box.innerHTML='<div class="empty">Keine Marken gefunden.</div>';stat.textContent='';return;}
+  box.innerHTML='<table><thead><tr><th>Marke</th><th class="hide-sm">Kategorie</th><th>Prov.</th><th class="hide-sm">Prod.</th><th>Sichtbar</th><th>Login</th><th></th></tr></thead><tbody>'+rows.map(b=>{
+    const prov=(b.provision_min!=null?b.provision_min:'?')+(b.provision_max!=null&&b.provision_max!==b.provision_min?'–'+b.provision_max:'')+' %';
+    const login=b.login_email?(b.login_freigegeben?'<span class="pill on static" title="'+hh(b.login_email)+'">frei</span>':'<span class="pill warn static" title="'+hh(b.login_email)+'">wartet</span>'):'<span class="pill off static">–</span>';
+    const id=hh(b.marken_id);
+    return '<tr><td><div class="nm">'+hh(b.name)+'</div><div class="muted mono" style="font-size:11px">'+id+'</div></td>'+
+      '<td class="hide-sm muted">'+hh(b.kategorie_haupt||'—')+'</td><td class="mono">'+hh(prov)+'</td>'+
+      '<td class="hide-sm mono muted">'+(b.produkte||0)+'</td>'+
+      '<td><span class="pill '+(b.sichtbar===false?'off':'on')+'" onclick="toggleBrand(\''+id+'\',\'sichtbar\','+(b.sichtbar===false)+')">'+(b.sichtbar===false?'versteckt':'sichtbar')+'</span></td>'+
+      '<td>'+login+'</td>'+
+      '<td><div class="act"><button class="btn tiny pri" onclick="openAs(\'marke\',\''+id+'\')"><i class="ph ph-arrow-square-out"></i> Profil öffnen</button><button class="btn tiny" onclick="editBrand(\''+id+'\')">Bearbeiten</button>'+(b.sichtbar===false?'':'<button class="btn tiny" onclick="toggleBrand(\''+id+'\',\'sichtbar\',true)">Deaktiv.</button>')+'<button class="btn tiny danger" onclick="delBrand(\''+id+'\')">Löschen</button></div></td></tr>';
+  }).join('')+'</tbody></table>';
+  stat.textContent=rows.length+' von '+brands.length+' Marken';
+}
+function renderSignups(box,stat){
+  const q=(document.getElementById('qMarken').value||'').toLowerCase();
+  const info='<div class="infobox" style="margin:12px 12px 0"><i class="ph ph-plugs-connected"></i> <b>Alle diese Anmeldungen kommen automatisch aus n8n</b> (Formular auf brand.spreat.com → n8n-Webhook, Spiegel des Google Sheets). Es ist der Lead-Trichter <b>vor</b> dem Katalog: <span class="badge b-green">importiert</span> = bereits als Marke im Brandpool, offene stehen noch zum Aufbau an. Nicht mit den „Marken" (dem kuratierten Katalog) verwechseln.</div>';
+  let rows=signups.filter(s=>!q||((s.marke+' '+(s.email||'')+' '+(s.ansprechpartner||'')).toLowerCase().includes(q)));
+  if(!rows.length){box.innerHTML=info+'<div class="empty">Keine n8n-Anmeldungen.</div>';stat.textContent='';return;}
+  box.innerHTML=info+'<table><thead><tr><th>Marke</th><th class="hide-sm">Ansprechpartner</th><th>E-Mail</th><th class="hide-sm">Herkunft</th><th>Status</th><th></th></tr></thead><tbody>'+rows.map(s=>{
+    const imp=s.marken_id?'<span class="badge b-green">importiert</span>':'<span class="badge b-amber">'+hh(s.profil_status||'offen')+'</span>';
+    return '<tr><td><div class="nm">'+hh(s.marke||'—')+'</div><div class="muted" style="font-size:11px">'+fmtDate(s.submitted_at)+'</div></td>'+
+      '<td class="hide-sm muted">'+hh(s.ansprechpartner||'—')+'</td><td class="muted">'+hh(s.email||'—')+'</td>'+
+      '<td class="hide-sm muted">'+hh(s.lead_herkunft||'—')+'</td><td>'+imp+'</td>'+
+      '<td><div class="act"><button class="btn tiny" onclick="viewSignup('+s.id+')">Details</button><button class="btn tiny danger" onclick="delSignup('+s.id+',\''+hh(String(s.marke||'')).replace(/'/g,"\\'")+'\')">Löschen</button></div></td></tr>';
+  }).join('')+'</tbody></table>';
+  stat.textContent=rows.length+' von '+signups.length+' Anmeldungen';
+}
+
+/* ---------- HAENDLER ---------- */
+function renderHaendler(){
+  const box=document.getElementById('haendlerTable'),stat=document.getElementById('haendlerStat');
+  if(!loaded){box.innerHTML='<div class="gate">Lade …</div>';return;}
+  const q=(document.getElementById('qHaendler').value||'').toLowerCase();
+  let rows=retailers.filter(r=>{
+    if(haendlerFilter==='aktiv'&&r.aktiv===false)return false;
+    if(haendlerFilter==='inaktiv'&&r.aktiv!==false)return false;
+    if(haendlerFilter==='verifiziert'&&!r.verified)return false;
+    if(haendlerFilter==='offen'&&r.offenheits_status!=='offen')return false;
+    if(q){const s=((r.ladenname||'')+' '+(r.ansprechpartner_name||'')+' '+(r.email||'')+' '+(r.ort||'')+' '+(r.adresse||'')+' '+(r.branche||'')).toLowerCase();if(!s.includes(q))return false;}
+    return true;
+  });
+  if(!rows.length){box.innerHTML='<div class="empty">Keine Einzelhändler gefunden.</div>';stat.textContent='';return;}
+  box.innerHTML='<table><thead><tr><th>Händler</th><th class="hide-sm">Ort</th><th class="hide-sm">Gruppe</th><th>Offen</th><th class="hide-sm">Auf Karte</th><th>Öffentl.</th><th>Verif.</th><th>Aktiv</th><th></th></tr></thead><tbody>'+rows.map(r=>{
+    const id=r.id;
+    const offen=r.offenheits_status==='geschlossen'?'<span class="pill off static">geschlossen</span>':'<span class="pill on static">offen</span>';
+    // effektiv_status kommt aus der DB (retailer_effektiv_status). Spalte „grau weil …": zeigt bei coming_soon den Grund.
+    const eff=r.effektiv_status||'—';
+    const effPill = eff==='offen'
+      ? '<span class="pill on static" title="auf der Karte sichtbar/anklickbar">sichtbar</span>'
+      : eff==='geschlossen'
+        ? '<span class="pill off static" title="geschlossen für neue Marken (Händler-Entscheidung)">geschlossen</span>'
+        : '<span class="pill off static" title="grau/anonym weil: '+hh(r.coming_soon_grund||'Profil unvollständig')+'">grau · '+hh(r.coming_soon_grund||'unvollständig')+'</span>';
+    // Ladenname zuerst, Person darunter — seit der Trennung am 31.07.2026 zwei Felder.
+    return '<tr><td><div class="nm">'+hh(r.ladenname||r.ansprechpartner_name||'—')+'</div><div class="muted" style="font-size:11px">'+(r.ladenname&&r.ansprechpartner_name?hh(r.ansprechpartner_name)+' · ':'')+hh(r.email||'')+(r.branche?' · '+hh(r.branche):'')+'</div></td>'+
+      '<td class="hide-sm muted">'+hh(r.ort||r.plz||'—')+'</td>'+
+      '<td class="hide-sm muted">'+(r.gruppe?hh(r.gruppe):'<span class="muted">—</span>')+'</td>'+
+      '<td>'+offen+'</td>'+
+      '<td class="hide-sm">'+effPill+'</td>'+
+      '<td><span class="pill '+(r.oeffentlich===false?'off':'on')+'" onclick="toggleRetailer(\''+id+'\',\'oeffentlich\','+(r.oeffentlich===false)+')" title="Öffentlich = anklickbares Store-Profil; aus = nur grauer Punkt">'+(r.oeffentlich===false?'grau':'öffentl.')+'</span></td>'+
+      '<td><span class="pill '+(r.verified?'on':'off')+'" onclick="toggleRetailer(\''+id+'\',\'verified\','+(!r.verified)+')">'+(r.verified?'ja':'—')+'</span></td>'+
+      '<td><span class="pill '+(r.aktiv===false?'off':'on')+'" onclick="toggleRetailer(\''+id+'\',\'aktiv\','+(r.aktiv===false)+')">'+(r.aktiv===false?'aus':'aktiv')+'</span></td>'+
+      '<td><div class="act"><button class="btn tiny pri" onclick="openAs(\'haendler\',\''+id+'\')"><i class="ph ph-arrow-square-out"></i> Profil öffnen</button><button class="btn tiny" onclick="editRetailer(\''+id+'\')">Bearbeiten</button><button class="btn tiny danger" onclick="delRetailer(\''+id+'\')">Löschen</button></div></td></tr>';
+  }).join('')+'</tbody></table>';
+  stat.textContent=rows.length+' von '+retailers.length+' Einzelhändlern';
+}
+
+/* ---------- GRUPPEN ---------- */
+function renderGruppen(){
+  const box=document.getElementById('gruppenTable'),stat=document.getElementById('gruppenStat');
+  if(!loaded){box.innerHTML='<div class="gate">Lade …</div>';return;}
+  if(!groups.length){box.innerHTML='<div class="empty">Keine Gruppen.</div>';stat.textContent='';return;}
+  box.innerHTML='<table><thead><tr><th>Gruppe</th><th>Typ</th><th class="hide-sm">Standorte</th><th class="hide-sm">Sammel-Mail</th><th>Login</th><th></th></tr></thead><tbody>'+groups.map(g=>{
+    const id=g.id;
+    const typ=g.typ==='verbund'?'<span class="badge b-blue">Verbund</span>':'<span class="badge b-grey">Einzel</span>';
+    const login=g.login_email?(g.login_freigegeben?'<span class="pill on" onclick="toggleGroup(\''+id+'\',\'login_freigegeben\',false)">aktiv</span>':'<span class="pill warn" onclick="toggleGroup(\''+id+'\',\'login_freigegeben\',true)">bereit</span>'):'<span class="pill off static" title="Login vorbereitet, aber keine E-Mail hinterlegt">inaktiv</span>';
+    return '<tr><td><div class="nm">'+hh(g.name)+'</div>'+(g.region?'<div class="muted" style="font-size:11px">'+hh(g.region)+'</div>':'')+'</td>'+
+      '<td>'+typ+'</td>'+
+      '<td class="hide-sm mono muted">'+(g.standort_anzahl||g.sub_standorte||1)+(g.locations_url?' <i class="ph ph-link" title="'+hh(g.locations_url)+'"></i>':'')+'</td>'+
+      '<td class="hide-sm muted">'+hh(g.sammel_email||'—')+'</td>'+
+      '<td>'+login+'</td>'+
+      '<td><div class="act"><button class="btn tiny" onclick="editGroup(\''+id+'\')">Bearbeiten</button></div></td></tr>';
+  }).join('')+'</tbody></table>';
+  stat.textContent=groups.length+' Gruppe(n). Login-bereit = E-Mail hinterlegt, aber nicht freigeschaltet.';
+}
+
+/* ---------- ANFRAGEN (beide Richtungen) ---------- */
+// _dir: 'lm' = Laden → Marke (Tabelle requests) · 'ml' = Marke → Laden (Tabelle brand_requests).
+// Dieselben Kürzel nimmt die RPC admin_request_detail(p_kind,…) entgegen.
+function unifyReqs(){
+  const a=reqs.map(r=>({_dir:'lm',id:r.id,created_at:r.created_at,freigabe:r.freigabe,status:r.status,match:r.match,
+    von:r.retailer||'Laden',von_mail:r.retailer_email,an:r.marken||'—',nachricht:r.nachricht,produkte:r.produkte,lieferzeit:r.lieferzeit_tage}));
+  const b=brandReqs.map(r=>({_dir:'ml',id:r.id,created_at:r.created_at,freigabe:r.freigabe,status:r.status,match:r.match,
+    von:r.marke||r.marken_id,von_mail:null,an:(r.ziel||'Laden')+(r.an_gruppe?' (Gruppe)':''),nachricht:r.nachricht,produkte:r.produkte,lieferzeit:r.lieferzeit_tage,provision:r.provision}));
+  return a.concat(b).sort((x,y)=>new Date(y.created_at)-new Date(x.created_at));
+}
+function renderAnfragen(){
+  const box=document.getElementById('anfragenTable'),stat=document.getElementById('anfragenStat');
+  if(!loaded){box.innerHTML='<div class="gate">Lade …</div>';return;}
+  let rows=unifyReqs().filter(r=>{
+    if(dir!=='alle'&&r._dir!==dir)return false;
+    if(freigabeFilter==='match')return !!r.match;
+    if(freigabeFilter!=='alle'&&r.freigabe!==freigabeFilter)return false;
+    return true;
+  });
+  if(!rows.length){box.innerHTML='<div class="empty">Keine Anfragen in dieser Ansicht.</div>';stat.textContent='';return;}
+  box.innerHTML='<table><thead><tr><th>Richtung</th><th>Von</th><th>An</th><th class="hide-sm">Prod.</th><th class="hide-sm">Datum</th><th>Freigabe</th><th>Match</th><th></th></tr></thead><tbody>'+rows.map(r=>{
+    const dirlbl=r._dir==='lm'
+      ?'<span class="dir" title="Laden → Marke"><i class="ph ph-storefront"></i> L<i class="ph ph-arrow-right" style="font-size:11px"></i>M</span>'
+      :'<span class="dir" title="Marke → Laden"><i class="ph ph-package"></i> M<i class="ph ph-arrow-right" style="font-size:11px"></i>L</span>';
+    const fb=r.freigabe==='frei'?'<span class="badge b-green">freigegeben</span>':r.freigabe==='abgelehnt'?'<span class="badge b-red">abgelehnt</span>':'<span class="badge b-amber">ausstehend</span>';
+    const match=r.match?'<span class="badge b-green"><i class="ph ph-handshake"></i> Match</span>':'<span class="muted">—</span>';
+    const tbl=r._dir==='lm'?'requests':'brand_requests';
+    const det='<button class="btn tiny" onclick="openReqDetail(\''+r._dir+'\',\''+js(r.id)+'\')" title="Anfrage und Absender-Profil ansehen"><i class="ph ph-magnifying-glass"></i> Ansehen</button>';
+    const acts=det+(r.freigabe==='ausstehend'
+      ?'<button class="btn tiny pri" onclick="setFreigabe(\''+tbl+'\',\''+r.id+'\',\'frei\')"><i class="ph ph-check"></i> Freigeben</button><button class="btn tiny danger" onclick="setFreigabe(\''+tbl+'\',\''+r.id+'\',\'abgelehnt\')">Ablehnen</button>'
+      :'<button class="btn tiny" onclick="setFreigabe(\''+tbl+'\',\''+r.id+'\',\'ausstehend\')">Zurücksetzen</button>');
+    const msg=r.nachricht?'<div class="muted" style="font-size:11.5px;margin-top:3px;max-width:320px">„'+hh(String(r.nachricht).slice(0,110))+(String(r.nachricht).length>110?'…':'')+'"</div>':'';
+    return '<tr><td>'+dirlbl+'</td>'+
+      '<td><a href="javascript:void(0)" onclick="openReqDetail(\''+r._dir+'\',\''+js(r.id)+'\')" class="nm" style="color:inherit;text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:3px">'+hh(r.von)+'</a>'+(r.von_mail?'<div class="muted" style="font-size:11px">'+hh(r.von_mail)+'</div>':'')+msg+'</td>'+
+      '<td>'+hh(r.an)+(r.provision!=null?' <span class="muted">· '+hh(r.provision)+' %</span>':'')+'</td>'+
+      '<td class="hide-sm mono muted">'+(r.produkte||0)+'</td><td class="hide-sm muted">'+fmtDate(r.created_at)+'</td>'+
+      '<td>'+fb+'</td><td>'+match+'</td><td><div class="act">'+acts+'</div></td></tr>';
+  }).join('')+'</tbody></table>';
+  const p=pendingCount();
+  stat.textContent=rows.length+' Anfrage(n) angezeigt · '+p+' ausstehend gesamt';
+}
+
+/* ---------- ANFRAGE-DETAIL (Modal) ----------
+   Zeigt zu einer Anfrage alles, was für die Freigabe-Entscheidung zählt:
+   Absender-Stammdaten, Ziel, Nachricht, Positionen — plus Sprung ins echte Profil.
+   Daten kommen aus admin_request_detail(); die RPC hat ihr eigenes is_spreat_admin()-Gate. */
+let reqCtx=null,reqSeq=0;
+function closeReq(){document.getElementById('reqOv').classList.remove('open');document.body.style.overflow='';reqCtx=null;reqSeq++;}
+function kv(l,v){return v==null||v===''?'':'<div class="rq-kv"><span>'+hh(l)+'</span><span>'+hh(v)+'</span></div>';}
+function eur(n){return n==null?'':Number(n).toLocaleString('de-DE',{style:'currency',currency:'EUR'});}
+// hh() escaped kein ', taugt also nicht für Werte, die in einfach gequoteten onclick-Strings landen.
+function js(s){return String(s==null?'':s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;').replace(/</g,'\\x3c');}
+
+async function openReqDetail(kind,id){
+  const seq=++reqSeq;
+  reqCtx={kind,id,tbl:kind==='lm'?'requests':'brand_requests'};
+  document.getElementById('reqTitle').textContent=kind==='lm'?'Anfrage: Laden → Marke':'Anfrage: Marke → Laden';
+  document.getElementById('reqBody').innerHTML='<div class="gate">Lade …</div>';
+  document.getElementById('reqFoot').innerHTML='<button class="btn" onclick="closeReq()">Schließen</button>';
+  document.getElementById('reqOv').classList.add('open');
+  document.body.style.overflow='hidden';   // Hintergrund-Scroll sperren (CLAUDE.md §5)
+  const {data,error}=await sb.rpc('admin_request_detail',{p_kind:kind,p_id:id});
+  if(seq!==reqSeq)return;                  // Modal wurde geschlossen oder eine andere Anfrage geöffnet
+  if(error||!data||!data.anfrage){
+    document.getElementById('reqBody').innerHTML='<div class="empty">Konnte nicht geladen werden: '
+      +hh(error?error.message:'Anfrage nicht gefunden (falsche ID oder falsche Richtung im Link).')+'</div>';
+    return;
+  }
+  renderReqDetail(data);
+}
+
+function renderReqDetail(d){
+  const a=d.anfrage||{},s=d.absender||{},ziele=d.ziele||[],pos=d.positionen||[];
+  const fb=a.freigabe==='frei'?'<span class="badge b-green">freigegeben</span>'
+        :a.freigabe==='abgelehnt'?'<span class="badge b-red">abgelehnt</span>'
+        :'<span class="badge b-amber">ausstehend</span>';
+
+  // Kopfzeile
+  let h='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">'+fb
+      +'<span class="muted" style="font-size:12.5px">'+hh(fmtDate(a.created_at))+'</span>'
+      +'<span class="muted" style="font-size:12.5px">· Status '+hh(a.status||'—')+'</span>'
+      +'<span class="mono muted" style="font-size:11px;margin-left:auto">'+hh(a.id||'')+'</span></div>';
+
+  // Absender + Ziel nebeneinander
+  const isLaden=s.typ==='laden';
+  const profBtn=isLaden
+    ? '<button class="btn tiny" onclick="openAs(\'haendler\',\''+js(s.id)+'\')"><i class="ph ph-arrow-square-out"></i> Ladenprofil öffnen</button>'
+      +'<button class="btn tiny" onclick="closeReq();switchTab(\'haendler\');editRetailer(\''+js(s.id)+'\')"><i class="ph ph-pencil-simple"></i> Stammdaten</button>'
+    : '<button class="btn tiny" onclick="openAs(\'marke\',\''+js(s.id)+'\')"><i class="ph ph-arrow-square-out"></i> Markenprofil öffnen</button>'
+      +'<button class="btn tiny" onclick="closeReq();switchTab(\'marken\');editBrand(\''+js(s.id)+'\')"><i class="ph ph-pencil-simple"></i> Stammdaten</button>';
+
+  const absKv = isLaden
+    ? kv('Ansprechpartner',[s.name,s.funktion].filter(Boolean).join(' · '))+kv('E-Mail',s.email)+kv('Telefon',s.telefon)
+      +kv('Ort',[s.plz,s.ort].filter(Boolean).join(' '))+kv('Adresse (intern)',s.adresse)+kv('Branche',s.branche)
+      +kv('Gruppe',s.gruppe)+kv('Verkaufsfläche',s.verkaufsflaeche_qm?s.verkaufsflaeche_qm+' m²':'')
+      +kv('Standorte',s.anzahl_filialen)+kv('Handelsvolumen',s.handelsvolumen)+kv('Preis-Positionierung',s.preis_positionierung)
+      +kv('Offenheit',s.offenheits_status)+kv('Sucht gerade',s.gesuche)+kv('No-Gos',s.no_gos)
+      +kv('Anforderungen',s.praeferenzen)+kv('Anfragen gesamt',s.anfragen_gesamt)+kv('Registriert',fmtDate(s.created_at))
+    : kv('Marke',s.name)+kv('Kurzbeschreibung',s.kurzbeschreibung)
+      +kv('Kategorie',[s.kategorie_haupt,s.kategorie_unter].filter(Boolean).join(' · '))
+      +kv('Website',s.website)+kv('Kontakt',s.email)+kv('Login',s.login_email)
+      +kv('Provision',(s.provision_min!=null||s.provision_max!=null)?((s.provision_min??'?')+'–'+(s.provision_max??'?')+' %'):'')
+      +kv('Gegründet',s.gruendungsjahr)+kv('Jahresumsatz',s.jahresumsatz)+kv('Werbebudget',s.werbebudget)
+      +kv('Display',s.display)+kv('Produkte',s.produkte_gesamt)+kv('Anfragen gesamt',s.anfragen_gesamt);
+
+  const vb=s.verified?' <i class="ph-fill ph-seal-check" title="Verifiziert" style="color:#2563eb;font-size:15px"></i>':'';
+
+  let zielHtml;
+  if(d.kind==='lm'){
+    zielHtml=ziele.length?ziele.map(z=>'<div class="rq-kv"><span>'+hh(z.name)+'</span><span>'
+      +(z.provision!=null?hh(z.provision)+' % · ':'')+hh(z.status||'')+'</span></div>').join(''):'<div class="muted">Keine Marke verknüpft.</div>';
+  }else{
+    zielHtml=ziele.map(z=>kv('Typ',z.typ==='gruppe'?'Unternehmensgruppe':'Laden')+kv('Name',z.name)+kv('E-Mail',z.email)
+      +kv('Ort',[z.plz,z.ort].filter(Boolean).join(' '))+kv('Branche',z.branche)+kv('Standorte',z.standort_anzahl)).join('')
+      +kv('Provision (Angebot)',a.provision!=null?a.provision+' %':'')
+      +kv('Lieferzeit',a.lieferzeit_tage?a.lieferzeit_tage+' Tage':'')
+      +kv('Am Zug',a.wer_dran);
+  }
+
+  h+='<div class="rq-grid">'
+    +'<div class="rq-card"><h4><i class="ph '+(isLaden?'ph-storefront':'ph-package')+'"></i> Absender · '+(isLaden?'Laden':'Marke')+vb+'</h4>'
+    +'<div class="act" style="justify-content:flex-start;margin:8px 0 6px">'+profBtn+'</div>'+absKv+'</div>'
+    +'<div class="rq-card"><h4><i class="ph '+(d.kind==='lm'?'ph-package':'ph-storefront')+'"></i> '+(d.kind==='lm'?'Angefragte Marken':'Ziel')+'</h4>'
+    +'<div style="margin-top:8px">'+zielHtml+'</div></div></div>';
+
+  // Nachricht
+  h+='<div class="sec-t">Nachricht</div>'
+    +(a.nachricht?'<div class="rq-msg">'+hh(a.nachricht).replace(/\n/g,'<br>')+'</div>':'<div class="muted" style="font-size:12.5px">Keine Nachricht mitgeschickt.</div>');
+
+  // Positionen
+  h+='<div class="sec-t">Positionen ('+pos.length+')</div>';
+  h+=pos.length
+    ?'<table class="rq-pos"><thead><tr><th></th><th>Produkt</th>'+(d.kind==='lm'?'<th>Marke</th>':'')
+      +'<th>UVP</th><th>Erstliefermenge</th><th>Provision</th><th>Lieferzeit</th><th>Status</th></tr></thead><tbody>'
+      +pos.map(p=>'<tr><td>'+(p.bild_url?'<img src="'+hh(p.bild_url)+'" alt="" loading="lazy">':'')+'</td>'
+        +'<td><div class="nm">'+hh(p.produktname||p.produkt_id)+'</div></td>'
+        +(d.kind==='lm'?'<td class="muted">'+hh(p.marke||'—')+'</td>':'')
+        +'<td class="mono">'+hh(eur(p.uvp_preis))+'</td>'
+        +'<td class="mono">'+(p.menge_pro_monat!=null?hh(p.menge_pro_monat)+' Stk.':'<span class="muted">—</span>')+'</td>'
+        +'<td class="mono">'+(p.provision!=null?hh(p.provision)+' %':'<span class="muted">—</span>')+'</td>'
+        +'<td class="mono">'+(p.lieferzeit_tage!=null?hh(p.lieferzeit_tage)+' T':'<span class="muted">—</span>')+'</td>'
+        +'<td class="muted">'+hh(p.item_status||'—')+'</td></tr>').join('')
+      +'</tbody></table>'
+    :'<div class="muted" style="font-size:12.5px">Keine Positionen.</div>';
+
+  document.getElementById('reqBody').innerHTML=h;
+
+  // Freigabe direkt aus dem Modal. Tabelle aus der RPC-Antwort, nicht aus reqCtx —
+  // sonst schreibt eine spät eintreffende Antwort in die Tabelle der zuletzt geöffneten Anfrage.
+  // Reihenfolge der Buttons wie in der Liste (Freigeben, dann Ablehnen), damit man sich nicht vergreift.
+  const tbl=js(d.tabelle),id=js(a.id);
+  document.getElementById('reqFoot').innerHTML='<button class="btn" onclick="closeReq()">Schließen</button>'
+    +(a.freigabe==='ausstehend'
+      ?'<button class="btn pri" onclick="setFreigabe(\''+tbl+'\',\''+id+'\',\'frei\',true)"><i class="ph ph-check"></i> Freigeben</button>'
+       +'<button class="btn danger" onclick="setFreigabe(\''+tbl+'\',\''+id+'\',\'abgelehnt\',true)">Ablehnen</button>'
+      :'<button class="btn" onclick="setFreigabe(\''+tbl+'\',\''+id+'\',\'ausstehend\',true)">Zurücksetzen</button>');
+}
+
+// Deep-Link aus der Benachrichtigungs-Mail: #anfrage=<uuid>&typ=lm|ml
+function openReqFromHash(){
+  const m=/[#&]anfrage=([0-9a-f-]{36})/i.exec(location.hash||'');
+  if(!m)return;
+  const t=/[#&]typ=(lm|ml)/i.exec(location.hash||'');
+  switchTab('anfragen');
+  setFreigabeFilter('alle',document.querySelector('#fltFreigabe button[data-f="alle"]'));
+  openReqDetail(t?t[1].toLowerCase():'lm',m[1]);
+}
+
+/* ---------- toggles / freigabe ---------- */
+// Schreibt und VERIFIZIERT, dass wirklich eine Zeile geändert wurde (.select()).
+// Ohne .select() liefert PostgREST bei RLS-gefilterten 0 Treffern {error:null} zurück —
+// dann würde "Gespeichert" lügen und der Wert springt beim nächsten Laden zurück.
+async function adminWrite(tbl,patch,idcol,id){
+  const {data,error}=await sb.from(tbl).update(patch).eq(idcol,id).select();
+  if(error){ toast('Fehler: '+error.message,true); return false; }
+  if(!data||!data.length){
+    let sess=null; try{ sess=(await sb.auth.getSession()).data.session; }catch(e){}
+    toast(sess?'Nicht gespeichert — keine Admin-Rechte für diese Zeile (RLS).':'Nicht gespeichert — Admin-Sitzung abgelaufen. Bitte neu anmelden.',true);
+    return false;
+  }
+  return true;
+}
+async function toggleBrand(id,col,val){
+  if(!await adminWrite('brands',{[col]:val},'marken_id',id))return;
+  const b=brands.find(x=>x.marken_id===id);if(b)b[col]=val;updateCounts();renderMarken();toast('Gespeichert');
+}
+async function toggleRetailer(id,col,val){
+  if(!await adminWrite('retailers',{[col]:val},'id',id))return;
+  const r=retailers.find(x=>String(x.id)===String(id));if(r)r[col]=val;renderHaendler();toast('Gespeichert');
+}
+async function toggleGroup(id,col,val){
+  if(!await adminWrite('retailer_groups',{[col]:val},'id',id))return;
+  const g=groups.find(x=>String(x.id)===String(id));if(g)g[col]=val;renderGruppen();toast('Gespeichert');
+}
+async function setFreigabe(tbl,id,val,fromModal){
+  if(!await adminWrite(tbl,{freigabe:val},'id',id))return;
+  const arr=tbl==='requests'?reqs:brandReqs; const r=arr.find(x=>String(x.id)===String(id));if(r)r.freigabe=val;
+  updateCounts();renderAnfragen();toast(val==='frei'?'Freigegeben — Gegenseite sieht die Anfrage jetzt':val==='abgelehnt'?'Abgelehnt':'Zurückgesetzt');
+  if(fromModal)closeReq();
+}
+
+/* ---------- edit modals ---------- */
+let editCtx=null;
+const BRAND_FIELDS=[['__sec','Stammdaten'],['name','Name','text'],['kurzbeschreibung','Kurzbeschreibung','text'],['kategorie_haupt','Kategorie (Haupt)','text'],['kategorie_unter','Kategorie (Unter)','text'],['website','Website','text'],['kontakt_email','Kontakt-E-Mail (öffentlich)','text'],['gruendungsjahr','Gegründet','text'],['__sec','Provision & Login'],['provision_min','Provision min %','number'],['provision_max','Provision max %','number'],['login_email','Login-E-Mail','text'],['login_freigegeben','Login freigegeben','bool'],['sichtbar','Im Brandpool sichtbar','bool'],['__sec','Für Händler'],['jahresumsatz','Jahresumsatz','text'],['werbebudget','Werbebudget','text'],['display','Aufsteller/Display','text'],['display_note','Display-Notiz','text'],['__sec','Social & Codes'],['instagram','Instagram','text'],['tiktok','TikTok','text'],['facebook','Facebook','text'],['linkedin','LinkedIn','text'],['ean','Barcode/EAN','text'],['eurolochung','Eurolochung','text'],['__sec','Lange Beschreibung'],['beschreibung','Beschreibung','textarea']];
+const RET_FIELDS=[['__sec','Laden'],['ladenname','Ladenname','text'],['beschreibung','Beschreibung (Profiltext)','text'],['__sec','Ansprechpartner (Person)'],['ansprechpartner_name','Name','text'],['ansprechpartner_funktion','Funktion','text'],['email','E-Mail','text'],['telefon','Telefon','text'],['__sec','Adresse & Standort'],['adresse','Adresse (intern, nicht an Marken)','text'],['ort','Ort (an Marken sichtbar)','text'],['plz','PLZ','text'],['lat','Lat','number'],['lng','Lng','number'],['verkaufsflaeche_qm','Verkaufsfläche m²','number'],['anzahl_filialen','Standorte','number'],['branche','Branche','text'],['handelsvolumen','Handelsvolumen','text'],['preis_positionierung','Preis-Positionierung','text'],['__sec','Matching & Status'],['no_gos','No-Gos (Komma)','arr'],['praeferenzen','Produktanforderungen (Komma)','arr'],['gesuche','Ich suche gerade (Komma)','arr'],['offenheits_status','Offenheits-Status (offen/geschlossen)','text'],['oeffentlich','Öffentlich (anklickbar)','bool'],['verified','Verifiziert','bool'],['aktiv','Aktiv','bool']];
+const GROUP_FIELDS=[['__sec','Gruppe'],['name','Name','text'],['typ','Typ (einzel/verbund)','text'],['ort','Ort','text'],['region','Region','text'],['standort_anzahl','Anzahl Standorte','number'],['locations_url','Locations-URL (JSON)','text'],['verified','Verifiziert','bool'],['__sec','Kontakt & Login (login-ready)'],['sammel_email','Sammel-E-Mail (Anfragen/Mails)','text'],['login_email','Login-E-Mail (optional, aktuell inaktiv)','text'],['login_freigegeben','Login freigegeben','bool'],['__sec','Matching'],['anforderungen','Produktanforderungen','textarea'],['gesuche','Ich suche gerade (Komma)','arr'],['no_gos','No-Gos (Komma)','arr']];
+function buildForm(fields,obj){return fields.map(f=>{if(f[0]==='__sec')return'<div class="sec-t">'+hh(f[1])+'</div>';const key=f[0],label=f[1],type=f[2],v=obj[key],id='ef_'+key;if(type==='bool')return'<div class="field"><label>'+hh(label)+'</label><select id="'+id+'"><option value="true"'+(v?' selected':'')+'>Ja</option><option value="false"'+(!v?' selected':'')+'>Nein</option></select></div>';if(type==='textarea')return'<div class="field full"><label>'+hh(label)+'</label><textarea id="'+id+'">'+hh(v==null?'':v)+'</textarea></div>';return'<div class="field"><label>'+hh(label)+'</label><input id="'+id+'" type="'+(type==='number'?'number':'text')+'" value="'+hh(v==null?'':v)+'"></div>';}).join('');}
+function editBrand(id){const b=brands.find(x=>x.marken_id===id);if(!b)return;document.getElementById('editFoot').style.display='';editCtx={type:'brand',id};document.getElementById('editTitle').textContent='Marke: '+b.name;document.getElementById('editForm').innerHTML=buildForm(BRAND_FIELDS,b);document.getElementById('editOv').classList.add('open');}
+function editRetailer(id){const r=retailers.find(x=>String(x.id)===String(id));if(!r)return;document.getElementById('editFoot').style.display='';editCtx={type:'retailer',id};document.getElementById('editTitle').textContent='Laden: '+(r.ladenname||r.ansprechpartner_name||r.email);document.getElementById('editForm').innerHTML=buildForm(RET_FIELDS,r);document.getElementById('editOv').classList.add('open');}
+function editGroup(id){const g=groups.find(x=>String(x.id)===String(id));if(!g)return;document.getElementById('editFoot').style.display='';editCtx={type:'group',id};document.getElementById('editTitle').textContent='Gruppe: '+g.name;document.getElementById('editForm').innerHTML=buildForm(GROUP_FIELDS,g);document.getElementById('editOv').classList.add('open');}
+function closeEdit(){document.getElementById('editOv').classList.remove('open');editCtx=null;}
+async function saveEdit(){
+  if(!editCtx)return;
+  const map={brand:{fields:BRAND_FIELDS,tbl:'brands',idcol:'marken_id',arr:brands,key:'marken_id'},retailer:{fields:RET_FIELDS,tbl:'retailers',idcol:'id',arr:retailers,key:'id'},group:{fields:GROUP_FIELDS,tbl:'retailer_groups',idcol:'id',arr:groups,key:'id'}};
+  const cfg=map[editCtx.type];
+  const localObj=cfg.arr.find(x=>String(x[cfg.key])===String(editCtx.id));
+  const obj={};
+  cfg.fields.forEach(f=>{if(f[0]==='__sec')return;const key=f[0],type=f[2],el=document.getElementById('ef_'+key);if(!el)return;let val=el.value;
+    if(type==='arr'){const a=val.split(',').map(s=>s.trim()).filter(Boolean);obj[key]=a;if(localObj)localObj[key]=a.join(', ');}
+    else if(type==='bool'){obj[key]=(val==='true');if(localObj)localObj[key]=(val==='true');}
+    else if(type==='number'){const n=val===''?null:(isNaN(+val)?null:+val);obj[key]=n;if(localObj)localObj[key]=n;}
+    else{obj[key]=(val===''?null:val);if(localObj)localObj[key]=val;}
+  });
+  const ok=await adminWrite(cfg.tbl,obj,cfg.idcol,editCtx.id);
+  if(!ok){ loadData(); return; }   // fehlgeschlagen → lokale (bereits mutierte) Werte aus der DB resyncen
+  closeEdit();updateCounts();renderMarken();renderHaendler();renderGruppen();toast('Gespeichert');
+}
+function viewSignup(id){const s=signups.find(x=>String(x.id)===String(id));if(!s)return;editCtx=null;document.getElementById('editTitle').textContent='Anmeldung: '+(s.marke||'');const rows=[['Marke',s.marke],['Ansprechpartner',s.ansprechpartner],['E-Mail',s.email],['Telefon',s.telefonnummer],['Website',s.webseite],['Wunsch-Kanäle',s.wunsch_vertriebskanaele],['Laden-Provision',s.laden_provision],['Branche',s.branche],['Produktkategorie',s.produktkategorie],['Herkunft',s.lead_herkunft],['Profil-Status',s.profil_status],['HubSpot-ID',s.hubspot_id],['importiert als',s.marken_id]];document.getElementById('editForm').innerHTML=rows.map(r=>'<div class="field full" style="flex-direction:row;justify-content:space-between;gap:12px;border-bottom:1px solid var(--border);padding:8px 0"><label style="margin:0">'+hh(r[0])+'</label><span style="font-size:13.5px;text-align:right">'+hh(r[1]||'—')+'</span></div>').join('');document.getElementById('editFoot').style.display='none';document.getElementById('editOv').classList.add('open');}
+
+/* ==========================================================================
+   AKTIVITÄT — wer nutzt uns wirklich, wer ist inaktiv
+   Quellen: Views aktivitaets_trichter / partner_status / Tabelle activity_events.
+   Alles per DB-Trigger befüllt; lesen darf nur is_spreat_admin().
+   ========================================================================== */
+let aktivGeladen=false, trichter=[], partner=[], events=[];
+let aktRolle='alle', aktStufe='relevant';
+const STUFE_BADGE={
+  'aktiv':                    ['b-green','Aktiv'],
+  'kühl':                     ['b-amber','Kühl'],
+  'kuehl':                    ['b-amber','Kühl'],
+  'kalt':                     ['b-red','Kalt'],
+  'eingeloggt, nichts getan': ['b-blue','Nichts getan'],
+  'Account, nie eingeloggt':  ['b-amber','Nie eingeloggt'],
+  'eingeladen, kein Account': ['b-grey','Kein Account'],
+  'nicht eingeladen':         ['b-grey','Nicht eingeladen']
+};
+function setAktRolle(r,el){aktRolle=r;el.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===el));renderAktiv();}
+function setAktStufe(s,el){aktStufe=s;el.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===el));renderAktiv();}
+
+async function loadAktivitaet(){
+  const [t,p,e] = await Promise.all([
+    sb.from('aktivitaets_trichter').select('*'),
+    sb.from('partner_status').select('*'),
+    sb.from('activity_events').select('*').order('ts',{ascending:false}).limit(200)
+  ]);
+  if(t.error||p.error||e.error){
+    const msg=(t.error||p.error||e.error).message;
+    document.getElementById('funnelBox').innerHTML='<div class="gate">Konnte nicht geladen werden: '+hh(msg)+'</div>';
+    return;
+  }
+  trichter=t.data||[]; partner=p.data||[]; events=e.data||[]; aktivGeladen=true;
+  const aktiv=partner.filter(x=>x.stufe==='aktiv').length;
+  document.getElementById('cntAktiv').textContent=aktiv;
+  renderFunnel(); renderAktiv(); renderEvents();
+}
+
+/* Trichter je Rolle. Bezugsgröße ist jeweils die Stufe darüber, nicht der Pool —
+   sonst liest sich alles als „1 % von 1141", obwohl der Rest nie eingeladen wurde. */
+function renderFunnel(){
+  const box=document.getElementById('funnelBox');
+  if(!trichter.length){ box.innerHTML='<div class="gate">Noch keine Daten.</div>'; return; }
+  const LABEL={laden:['ph-storefront','Läden'], marke:['ph-package','Marken']};
+  box.innerHTML=trichter.map(t=>{
+    const ic=(LABEL[t.rolle]||['ph-users',t.rolle]);
+    const stufen=[
+      ['im Pool',            t.im_pool,      t.im_pool],
+      ['eingeladen',         t.eingeladen,   t.im_pool],
+      ['Account angelegt',   t.mit_account,  Math.max(t.eingeladen,1)],
+      ['je eingeloggt',      t.je_eingeloggt,Math.max(t.mit_account,1)],
+      ['je etwas getan',     t.je_gehandelt, Math.max(t.je_eingeloggt,1)],
+      ['aktiv (30 Tage)',    t.aktiv_30t,    Math.max(t.je_eingeloggt,1)]
+    ];
+    return '<div class="funnel"><h4><i class="ph '+ic[0]+'"></i> '+ic[1]
+      +'<span class="tot">'+t.im_pool+' im Pool</span></h4>'
+      + stufen.map((s,i)=>{
+          const pct = s[2] ? Math.round(s[1]/s[2]*100) : 0;
+          return '<div class="fstep'+(s[1]?'':' dim')+'"><span>'+s[0]+'</span>'
+            +'<div class="fbar"><i style="width:'+Math.max(pct,s[1]?3:0)+'%"></i></div>'
+            +'<b>'+s[1]+(i?' <span class="muted" style="font-weight:600">'+pct+'%</span>':'')+'</b></div>';
+        }).join('')
+      +'</div>';
+  }).join('');
+}
+
+/* Anrufliste: wer hat einen Account und hakt wo? Sortiert nach längster Stille. */
+function renderAktiv(){
+  const box=document.getElementById('aktivTable'), stat=document.getElementById('aktivStat');
+  if(!aktivGeladen){ box.innerHTML='<div class="gate">Lade …</div>'; return; }
+  const q=(document.getElementById('qAktiv').value||'').toLowerCase();
+  const HANDLUNGSBEDARF=['Account, nie eingeloggt','eingeloggt, nichts getan','kühl','kuehl','kalt'];
+
+  let rows=partner.filter(p=>{
+    if(aktRolle!=='alle' && p.rolle!==aktRolle) return false;
+    if(aktStufe==='relevant'        && !p.hat_account) return false;
+    if(aktStufe==='handlungsbedarf' && !HANDLUNGSBEDARF.includes(p.stufe)) return false;
+    if(aktStufe==='aktiv'           && p.stufe!=='aktiv') return false;
+    if(q && !((p.name||'')+' '+(p.email||'')).toLowerCase().includes(q)) return false;
+    return true;
+  });
+  // Ohne Zeitstempel nach oben — das sind die, bei denen am meisten fehlt.
+  const stille=p=>p.zuletzt_gesehen?new Date(p.zuletzt_gesehen).getTime():0;
+  rows.sort((a,b)=>stille(a)-stille(b));
+
+  if(!rows.length){ box.innerHTML='<div class="empty">Kein Eintrag für diese Auswahl.</div>'; stat.textContent=''; return; }
+
+  box.innerHTML='<table><thead><tr><th>Name</th><th>Rolle</th><th>Status</th>'
+    +'<th>letzter Login</th><th>letzte Handlung</th><th class="mono">still seit</th>'
+    +'<th class="mono">Logins</th><th class="mono">Handlungen</th></tr></thead><tbody>'
+    + rows.slice(0,300).map(p=>{
+        const b=STUFE_BADGE[p.stufe]||['b-grey',p.stufe];
+        const still = p.zuletzt_gesehen
+          ? Math.floor((Date.now()-new Date(p.zuletzt_gesehen).getTime())/86400000)+' T'
+          : '—';
+        return '<tr><td><div class="nm">'+hh(p.name||'—')+'</div>'
+          +'<div class="muted" style="font-size:11.5px">'+hh(p.email||'')+'</div></td>'
+          +'<td><span class="dir"><i class="ph '+(p.rolle==='marke'?'ph-package':'ph-storefront')+'"></i>'
+          +(p.rolle==='marke'?'Marke':'Laden')+'</span></td>'
+          +'<td><span class="badge '+b[0]+'">'+hh(b[1])+'</span></td>'
+          +'<td class="muted">'+(fmtDate(p.letzter_login)||'—')+'</td>'
+          +'<td class="muted">'+(fmtDate(p.letzte_handlung)||'—')+'</td>'
+          +'<td class="mono">'+still+'</td>'
+          +'<td class="mono">'+(p.logins_gesamt||0)+'</td>'
+          +'<td class="mono">'+(p.handlungen_gesamt||0)+'</td></tr>';
+      }).join('')
+    +'</tbody></table>';
+  stat.textContent=rows.length+' Einträge'+(rows.length>300?' (300 angezeigt)':'')
+    +' · oben steht, wer am längsten nichts getan hat.';
+}
+
+function renderEvents(){
+  const box=document.getElementById('eventTable');
+  if(!events.length){ box.innerHTML='<div class="empty">Noch keine Ereignisse aufgezeichnet. Die Trigger sammeln ab dem 31.07.2026.</div>'; return; }
+  const TYP={login:'Login',registrierung:'Registrierung',profil:'Profil',produkt:'Produkt',
+             anfrage:'Anfrage',verhandlung:'Verhandlung',nachricht:'Nachricht'};
+  box.innerHTML='<table><thead><tr><th>Zeitpunkt</th><th>Wer</th><th>Rolle</th><th>Was</th><th>Detail</th></tr></thead><tbody>'
+    + events.slice(0,120).map(e=>{
+        const d=new Date(e.ts);
+        return '<tr><td class="muted mono">'+(isNaN(d)?'':d.toLocaleString('de-DE'))+'</td>'
+          +'<td><div class="nm">'+hh(e.akteur_name||e.email||'—')+'</div></td>'
+          +'<td class="muted">'+hh(e.rolle)+'</td>'
+          +'<td><span class="badge '+(e.typ==='login'?'b-blue':'b-green')+'">'+hh(TYP[e.typ]||e.typ)+'</span></td>'
+          +'<td class="muted">'+hh(e.detail||e.quelle||'')+'</td></tr>';
+      }).join('')
+    +'</tbody></table>';
+}
+
+/* ==========================================================================
+   ABLEHNUNGEN · SUCHANFRAGEN · FRAGEN (Session D, 2026-07-31)
+   Alle drei lesen über eigene SECURITY-DEFINER-RPCs mit is_spreat_admin()-Gate.
+   Kein direkter Tabellenzugriff aus dem Client.
+   ========================================================================== */
+
+/* ---------- Ablehnungen ---------- */
+function vonDatum(tage){ return tage==='alle' ? null
+  : new Date(Date.now()-Number(tage)*86400000).toISOString(); }
+function setAblZeit(t,el){ ablZeit=t; el.parentNode.querySelectorAll('button')
+  .forEach(b=>b.classList.toggle('on',b===el)); loadAblehnungen(); }
+
+async function loadAblehnungen(){
+  const box=document.getElementById('ablTable');
+  box.innerHTML='<div class="gate">Lade …</div>';
+  const marke=document.getElementById('ablMarke').value||null;
+  const laden=document.getElementById('ablLaden').value||null;
+  const {data,error}=await sb.rpc('admin_ablehnungen',
+    {p_von:vonDatum(ablZeit), p_bis:null, p_marke:marke, p_retailer:laden});
+  if(error){ box.innerHTML='<div class="empty">Fehler: '+hh(error.message)+'</div>'; return; }
+  ablData=data||{zeilen:[],je_marke:[],marken:[],laeden:[]};
+  fuelleAblFilter();
+  renderAblehnungen();
+}
+// Die Auswahllisten kommen aus der RPC, damit dort nur Marken/Läden stehen,
+// die überhaupt eine Ablehnung haben. Auswahl beim Neuladen beibehalten.
+function fuelleAblFilter(){
+  [['ablMarke','marken','marken_id','Alle Marken'],
+   ['ablLaden','laeden','id','Alle Läden']].forEach(([id,key,val,leer])=>{
+    const el=document.getElementById(id), alt=el.value;
+    el.innerHTML='<option value="">'+leer+'</option>'
+      + (ablData[key]||[]).map(o=>'<option value="'+hh(o[val])+'">'+hh(o.name)+'</option>').join('');
+    el.value=alt;
+  });
+}
+function renderAblehnungen(){
+  const box=document.getElementById('ablTable'), stat=document.getElementById('ablStat');
+  if(!ablData){ box.innerHTML='<div class="gate">Lade …</div>'; return; }
+  const q=(document.getElementById('qAbl').value||'').toLowerCase();
+  const rows=(ablData.zeilen||[]).filter(r=>!q ||
+    ((r.grund||'')+' '+(r.produkt||'')+' '+(r.marke||'')+' '+(r.laden||'')).toLowerCase().includes(q));
+
+  // Verdichtung nach Marke — das eigentliche Signal.
+  const jm=(ablData.je_marke||[]).filter(m=>m.anzahl>0);
+  document.getElementById('ablJeMarke').innerHTML = jm.length
+    ? jm.map(m=>'<div class="funnel"><h4>'+hh(m.marke)+'</h4><div class="fbar">'
+        +'<b style="font-size:20px">'+m.anzahl+'</b> '
+        +'<span class="muted">'+(m.anzahl===1?'Ablehnung':'Ablehnungen')+'</span></div></div>').join('')
+    : '';
+
+  if(!rows.length){ box.innerHTML='<div class="empty">Keine Ablehnung für diese Auswahl.</div>';
+    stat.textContent=''; return; }
+
+  box.innerHTML='<table><thead><tr><th>Richtung</th><th>Marke</th><th>Laden</th>'
+    +'<th>Produkt</th><th>Interner Grund</th><th class="mono">Anfrage vom</th></tr></thead><tbody>'
+    + rows.map(r=>'<tr>'
+        +'<td><span class="dir"><i class="ph '+(r.richtung==='marke_laden'?'ph-package':'ph-storefront')+'"></i>'
+        +(r.richtung==='marke_laden'?'Marke → Laden':'Laden → Marke')+'</span></td>'
+        +'<td><div class="nm">'+hh(r.marke||'—')+'</div></td>'
+        +'<td>'+hh(r.laden||'—')+'</td>'
+        +'<td>'+hh(r.produkt||'—')+'</td>'
+        +'<td style="max-width:340px">'+hh(r.grund||'')+'</td>'
+        +'<td class="muted mono">'+(fmtDate(r.wann)||'—')+'</td>'
+      +'</tr>').join('')
+    +'</tbody></table>';
+  stat.textContent=rows.length+' von '+(ablData.zeilen||[]).length+' Ablehnungen.';
+}
+
+/* ---------- Suchanfragen ---------- */
+function setSuchZeit(t,el){ suchZeit=t; el.parentNode.querySelectorAll('button')
+  .forEach(b=>b.classList.toggle('on',b===el)); loadSuchanfragen(); }
+function setSuchTreffer(f,el){ suchTreffer=f; el.parentNode.querySelectorAll('button')
+  .forEach(b=>b.classList.toggle('on',b===el)); renderSuchanfragen(); }
+
+async function loadSuchanfragen(){
+  const box=document.getElementById('suchTable');
+  box.innerHTML='<div class="gate">Lade …</div>';
+  const {data,error}=await sb.rpc('admin_suchanfragen',{p_von:vonDatum(suchZeit),p_bis:null});
+  if(error){ box.innerHTML='<div class="empty">Fehler: '+hh(error.message)+'</div>'; return; }
+  suchData=data||{begriffe:[],gesamt:0};
+  document.getElementById('cntSuche').textContent=suchData.gesamt||0;
+  renderSuchanfragen();
+}
+function renderSuchanfragen(){
+  const box=document.getElementById('suchTable'), stat=document.getElementById('suchStat');
+  if(!suchData){ box.innerHTML='<div class="gate">Lade …</div>'; return; }
+  const q=(document.getElementById('qSuche').value||'').toLowerCase();
+  let rows=(suchData.begriffe||[])
+    .filter(r=>suchTreffer!=='ohne' || r.ohne_treffer)
+    .filter(r=>!q || (r.begriff||'').includes(q));
+
+  if(!rows.length){
+    box.innerHTML=(suchData.gesamt||0)===0
+      ? '<div class="empty">Noch keine Suche protokolliert.<br>'
+        +'<span class="muted">Hinweis: das Frontend schickt den Insert derzeit nicht ab — '
+        +'der Aufruf in <span class="mono">logSearch()</span> wird nicht awaitet. '
+        +'Als Anforderung an Session L im Arbeitsboard eingetragen.</span></div>'
+      : '<div class="empty">Kein Begriff für diese Auswahl.</div>';
+    stat.textContent=''; return;
+  }
+
+  box.innerHTML='<table><thead><tr><th>Begriff</th><th class="mono">Suchen</th>'
+    +'<th class="mono">Treffer min</th><th class="mono">Treffer Ø</th>'
+    +'<th>Bewertung</th><th class="mono">zuletzt</th></tr></thead><tbody>'
+    + rows.map(r=>'<tr>'
+        +'<td><div class="nm">'+hh(r.begriff)+'</div></td>'
+        +'<td class="mono">'+r.anzahl+'</td>'
+        +'<td class="mono">'+(r.treffer_min==null?'—':r.treffer_min)+'</td>'
+        +'<td class="mono">'+(r.treffer_schnitt==null?'—':r.treffer_schnitt)+'</td>'
+        +'<td>'+(r.ohne_treffer
+            ? '<span class="badge b-red">nichts gefunden</span>'
+            : '<span class="badge b-grey">gefunden</span>')+'</td>'
+        +'<td class="muted mono">'+(fmtDate(r.zuletzt)||'—')+'</td>'
+      +'</tr>').join('')
+    +'</tbody></table>';
+  const ohne=rows.filter(r=>r.ohne_treffer).length;
+  stat.textContent=rows.length+' Begriffe · '+ohne+' davon ohne Treffer · '
+    +(suchData.gesamt||0)+' Suchen insgesamt.';
+}
+
+/* ---------- Fragen aus dem FAQ ---------- */
+function setFaqFilter(f,el){ faqFilter=f; el.parentNode.querySelectorAll('button')
+  .forEach(b=>b.classList.toggle('on',b===el)); renderFaq(); }
+
+async function loadFaq(){
+  const box=document.getElementById('faqTable');
+  box.innerHTML='<div class="gate">Lade …</div>';
+  const {data,error}=await sb.rpc('admin_faq_fragen',{p_nur_offen:false});
+  if(error){ box.innerHTML='<div class="empty">Fehler: '+hh(error.message)+'</div>'; return; }
+  faqData=data||[];
+  document.getElementById('cntFaq').textContent=faqData.filter(f=>!f.erledigt).length;
+  renderFaq();
+  oeffneFaqAusHash();
+}
+function renderFaq(){
+  const box=document.getElementById('faqTable'), stat=document.getElementById('faqStat');
+  if(!faqData){ box.innerHTML='<div class="gate">Lade …</div>'; return; }
+  const q=(document.getElementById('qFaq').value||'').toLowerCase();
+  const rows=faqData
+    .filter(f=>faqFilter==='alle' || !f.erledigt)
+    .filter(f=>!q || ((f.frage||'')+' '+(f.antwort_email||'')+' '+(f.wer||'')).toLowerCase().includes(q));
+
+  if(!rows.length){ box.innerHTML='<div class="empty">Keine Frage für diese Auswahl.</div>';
+    stat.textContent=''; return; }
+
+  box.innerHTML='<table><thead><tr><th>Frage</th><th>Antwort an</th><th>Wer</th>'
+    +'<th class="mono">eingegangen</th><th></th></tr></thead><tbody>'
+    + rows.map(f=>'<tr id="faq-'+hh(f.id)+'">'
+        +'<td style="max-width:420px"><div class="nm">'+hh(f.frage)+'</div>'
+        +(f.kontext?'<div class="muted" style="font-size:11.5px">'+hh(f.kontext)+'</div>':'')+'</td>'
+        +'<td><a href="mailto:'+hh(f.antwort_email)+'?subject='
+        +encodeURIComponent('Deine Frage an Spreat')+'">'+hh(f.antwort_email)+'</a></td>'
+        +'<td>'+hh(f.wer||'—')+' <span class="muted" style="font-size:11.5px">('+hh(f.rolle)+')</span></td>'
+        +'<td class="muted mono">'+(fmtDate(f.created_at)||'—')+'</td>'
+        +'<td><button class="btn sm" onclick="faqErledigt(\''+hh(f.id)+'\','+(f.erledigt?'false':'true')+')">'
+        +(f.erledigt?'<i class="ph ph-arrow-counter-clockwise"></i> Wieder offen'
+                    :'<i class="ph ph-check"></i> Erledigt')+'</button></td>'
+      +'</tr>').join('')
+    +'</tbody></table>';
+  stat.textContent=rows.length+' von '+faqData.length+' Fragen · '
+    +faqData.filter(f=>!f.erledigt).length+' offen.';
+}
+// Schreibt und prüft die Zeilenzahl (Muster adminWrite): sonst lügt der Toast,
+// wenn RLS null Zeilen trifft.
+async function faqErledigt(id, wert){
+  const {data,error}=await sb.from('faq_fragen').update({erledigt:wert}).eq('id',id).select('id');
+  if(error){ toast('Fehler: '+error.message,true); return; }
+  if(!data||!data.length){ toast('Nichts geändert — fehlt das Admin-Recht?',true); return; }
+  const f=faqData.find(x=>String(x.id)===String(id)); if(f) f.erledigt=wert;
+  document.getElementById('cntFaq').textContent=faqData.filter(x=>!x.erledigt).length;
+  renderFaq(); toast(wert?'Als erledigt markiert':'Wieder offen');
+}
+// Deep-Links aus den Benachrichtigungsmails: #ablehnungen und #faq=<uuid>
+function oeffneFaqAusHash(){
+  const m=/[#&]faq=([0-9a-f-]{36})/i.exec(location.hash||'');
+  if(!m) return;
+  const el=document.getElementById('faq-'+m[1]);
+  if(el){ el.scrollIntoView({block:'center'}); el.style.background='var(--blue-bg)'; }
+}
+function oeffnePaneAusHash(){
+  const h=(location.hash||'').toLowerCase();
+  if(h.includes('ablehnungen')) switchTab('ablehnungen');
+  else if(h.includes('faq='))   switchTab('faq');
+}
+
+/* ---------- delete (RPC) ---------- */
+let confAction=null;
+function askConf(title,bodyHtml,btnLabel,fn){document.getElementById('confTitle').textContent=title;document.getElementById('confBody').innerHTML=bodyHtml;const btn=document.getElementById('confBtn');btn.textContent=btnLabel||'Löschen';confAction=fn;document.getElementById('confOv').classList.add('open');const inp=document.getElementById('confInput');btn.disabled=!!inp;if(inp){inp.value='';inp.oninput=()=>{btn.disabled=inp.value.trim()!==inp.dataset.expect;};setTimeout(()=>inp.focus(),50);}}
+function closeConf(){document.getElementById('confOv').classList.remove('open');confAction=null;}
+document.getElementById('confBtn').onclick=async()=>{if(confAction){const f=confAction;closeConf();await f();}};
+function delBrand(id){const b=brands.find(x=>x.marken_id===id);if(!b)return;askConf('Marke endgültig löschen','<div class="warnbox">Entfernt <b>'+hh(b.name)+'</b> und <b>'+(b.produkte||0)+' Produkte</b> unwiderruflich — sofort auch aus dem Live-Brandpool.<br>Zum Deaktivieren stattdessen „Deaktiv." nutzen.</div><div class="field"><label>Zum Bestätigen den Markennamen eingeben:</label><input id="confInput" data-expect="'+hh(b.name)+'" placeholder="'+hh(b.name)+'"></div>','Endgültig löschen',async()=>{const {error}=await sb.rpc('admin_delete_brand',{p_marken_id:id});if(error){toast('Fehler: '+error.message,true);return;}brands=brands.filter(x=>x.marken_id!==id);updateCounts();renderMarken();toast('Marke gelöscht');});}
+function delRetailer(id){const r=retailers.find(x=>String(x.id)===String(id));if(!r)return;askConf('Einzelhändler endgültig löschen','<div class="warnbox">Entfernt <b>'+hh(r.ladenname||r.ansprechpartner_name||r.email||'')+'</b> samt seiner Anfragen unwiderruflich.<br>Zum Deaktivieren stattdessen „Deaktiv." nutzen.</div><div class="field"><label>Zum Bestätigen „LÖSCHEN" eingeben:</label><input id="confInput" data-expect="LÖSCHEN" placeholder="LÖSCHEN"></div>','Endgültig löschen',async()=>{const {error}=await sb.rpc('admin_delete_retailer',{p_id:id});if(error){toast('Fehler: '+error.message,true);return;}retailers=retailers.filter(x=>String(x.id)!==String(id));updateCounts();renderHaendler();toast('Händler gelöscht');});}
+function delSignup(id,name){askConf('Anmeldung löschen','<div class="warnbox">Entfernt die Anmeldung <b>'+hh(name)+'</b> aus brand_signups. Die Live-Marke (falls schon importiert) bleibt bestehen.</div>','Löschen',async()=>{const {error}=await sb.from('brand_signups').delete().eq('id',id);if(error){toast('Fehler: '+error.message,true);return;}signups=signups.filter(x=>String(x.id)!==String(id));updateCounts();renderMarken();toast('Anmeldung gelöscht');});}
+</script>
+</body>
+</html>
