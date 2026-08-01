@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ — so ist es eingebaut</title>
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<style>
+  :root{--accent:#2CB461;--accent-dk:#178a49;--accent-soft:#e3f6ec;--bg:#f6f7f9;--card:#fff;
+    --border:#e6e8ec;--text:#16181d;--muted:#6b7280}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);line-height:1.5;font-size:14px;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  i.ph,i[class^="ph-"],i[class*=" ph-"]{font-style:normal;line-height:1}
+  a{color:var(--accent-dk)}a:hover{color:var(--text)}
+  button,input,textarea{font-family:inherit}button{cursor:pointer}
+  .page{max-width:1240px;margin:0 auto;padding:24px 22px 70px}
+  .crumb{margin-bottom:18px}
+  .crumb a{font-size:12.5px;font-weight:700;text-decoration:none;border:1px solid var(--border);
+    background:var(--card);border-radius:9px;padding:7px 12px;color:var(--text)}
+  /* ===== FAQ (nummerierte weiße Karten, volle Seitenbreite) ===== */
+  .fq-frame{background:transparent;border:none;border-radius:0;box-shadow:none;max-width:none;margin-bottom:48px}
+  .fq-top{padding:4px 0 18px}
+  .fq-kick{font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--accent-dk)}
+  .fq-top h3{font-size:26px;letter-spacing:-.025em;margin:7px 0 5px}
+  .fq-top p{margin:0;font-size:13.5px;color:var(--muted);max-width:600px}
+  .fq-grid{display:grid;grid-template-columns:230px minmax(0,1fr);gap:0;border-top:1px solid var(--border)}
+  @media(max-width:760px){.fq-grid{grid-template-columns:1fr}}
+  .fq-nav{border-right:1px solid var(--border);padding:20px 18px 20px 0;background:transparent}
+  @media(max-width:760px){.fq-nav{border-right:none;border-bottom:1px solid var(--border);display:flex;gap:6px;overflow:auto;padding:12px 0}}
+  .fq-nav button{display:block;width:100%;text-align:left;background:none;border:none;padding:9px 14px;font:inherit;
+    font-size:13px;color:var(--muted);border-radius:9px;cursor:pointer}
+  .fq-nav button:hover{color:var(--text);background:var(--card)}
+  .fq-nav button.on{color:var(--text);font-weight:700;background:var(--card);box-shadow:inset 0 0 0 1px var(--border)}
+  @media(max-width:760px){.fq-nav button{width:auto;white-space:nowrap;border:1px solid var(--border);border-radius:999px;padding:7px 13px;box-shadow:none}
+    .fq-nav button.on{background:var(--text);border-color:var(--text);color:#fff}}
+  .fq-body{padding:20px 0 26px 28px;min-width:0}
+  @media(max-width:760px){.fq-body{padding:18px 0 26px}}
+  .fq-secttl{font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#aab0b8;margin:20px 0 8px}
+  .fq-secttl:first-child{margin-top:0}
+  .fq-item{background:var(--card);border:1px solid var(--border);border-radius:11px;margin-bottom:7px}
+  .fq-item summary{list-style:none;cursor:pointer;display:flex;align-items:flex-start;gap:11px;padding:13px 15px;
+    font-size:14px;font-weight:600;line-height:1.4}
+  .fq-item summary::-webkit-details-marker{display:none}
+  .fq-item summary:hover{color:var(--accent-dk)}
+  .fq-item .fq-n{flex:0 0 auto;width:20px;font-size:11px;font-weight:800;color:#c3c8cf;letter-spacing:.04em;margin-top:2px}
+  .fq-item[open]{border-color:#cbe6d7;background:linear-gradient(180deg,#fbfefc,#fff)}
+  .fq-item[open] .fq-n{color:var(--accent)}
+  .fq-item .fq-a{padding:0 15px 15px 46px;font-size:13.5px;color:#4b5058;line-height:1.65;max-width:720px}
+  @media(max-width:560px){.fq-item .fq-a{padding-left:15px}}
+  .fq-ask{margin-top:40px;padding-top:22px;border-top:1px solid var(--border)}
+  .fq-ask .inner{background:var(--card);border:1px dashed #cbd7e0;border-radius:11px;padding:13px 15px}
+  .fq-ask .bar{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+  .fq-ask .bar>i{color:var(--accent-dk)}
+  .fq-ask .bar b{font-size:13.5px}
+  .fq-ask .bar span{font-size:12.5px;color:var(--muted)}
+  .fq-ask .openb{margin-left:auto;border:1px solid var(--border);background:var(--card);border-radius:9px;height:32px;
+    padding:0 14px;font:inherit;font-size:12.5px;font-weight:700;color:var(--text);cursor:pointer}
+  .fq-ask .openb:hover{border-color:var(--accent);color:var(--accent-dk);background:var(--accent-soft)}
+  .fq-ask .form{display:none;margin-top:12px}
+  .fq-ask.open .form{display:block}
+  .fq-ask.open .openb{display:none}
+  .fq-ask textarea{width:100%;min-height:70px;border:1px solid var(--border);border-radius:9px;padding:9px 11px;
+    font:inherit;font-size:13.5px;line-height:1.55;outline:none;resize:vertical;background:var(--card)}
+  .fq-ask textarea:focus{border-color:var(--accent)}
+  .fq-ask .row{display:flex;align-items:center;gap:10px;margin-top:9px;flex-wrap:wrap}
+  .fq-ask .to{font-size:12px;color:var(--muted)}
+  .fq-ask .to b{color:var(--text);font-weight:600}
+  .fq-ask .lnk{background:none;border:none;padding:0;margin-left:6px;font:inherit;font-size:11.5px;font-weight:700;
+    color:var(--muted);cursor:pointer;text-decoration:underline;text-decoration-color:#dcdfe4;text-underline-offset:2px}
+  .fq-ask .lnk:hover{color:var(--text)}
+  .fq-ask input[type=email]{width:210px;max-width:100%;border:1px solid var(--border);border-radius:9px;height:32px;
+    padding:0 10px;font:inherit;font-size:13px;outline:none;display:none;background:var(--card)}
+  .fq-ask input[type=email]:focus{border-color:var(--accent)}
+  .fq-ask .send{margin-left:auto;border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:9px;
+    height:32px;padding:0 15px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+  .fq-ask .send:hover{background:var(--accent-dk);border-color:var(--accent-dk)}
+  .fq-ask .done{display:none;align-items:center;gap:7px;font-size:12.5px;color:var(--accent-dk);font-weight:600;margin-top:11px}
+  .fq-ask .done.on{display:flex}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="crumb"><a href="index.html">← Übersicht</a></div>
+<div>
+  <div class="fq-frame">
+    <div class="fq-top">
+      <div class="fq-kick">Spreat für Läden</div>
+      <h3>Häufige Fragen</h3>
+      <p>Kosten, Ablauf, Haftung und Technik — kurz beantwortet.</p>
+    </div>
+    <div class="fq-grid">
+        <div class="fq-nav" id="fqNav">
+          <button class="on" onclick="fqFilter('alle',this)">Alle Fragen</button>
+          <button onclick="fqFilter('kosten',this)">Kosten &amp; Auszahlung</button>
+          <button onclick="fqFilter('ablauf',this)">Ablauf</button>
+          <button onclick="fqFilter('ware',this)">Ware &amp; Haftung</button>
+          <button onclick="fqFilter('technik',this)">Technik</button>
+        </div>
+      <div class="fq-body" id="fqBody">
+          <div class="fq-secttl" data-sec="kosten">Kosten &amp; Auszahlung</div>
+          <details class="fq-item" data-cat="kosten"><summary><span class="fq-n">01</span> Was kostet es mich als Laden, Produkte über Spreat zu verkaufen?</summary>
+            <div class="fq-a">Nichts. Für dich als Laden fallen 0 € Fixkosten, keine Aufnahmegebühren und keine monatlichen Grundkosten an. Du gehst nicht in Vorleistung und hast keine Kapitalbindung. Spreat arbeitet rein erfolgsbasiert und finanziert sich über 5 % inkl. Zahlungsdienstleister-Gebühr.</div></details>
+          <details class="fq-item" data-cat="kosten"><summary><span class="fq-n">02</span> Wie und wann wird meine Provision ausgezahlt?</summary>
+            <div class="fq-a">Verkauft ihr ein Produkt, splittet das Kassensystem den Zahlungsbetrag in Echtzeit. Die gesammelten Provisionen werden in der Regel gebündelt einmal im Monat auf dein hinterlegtes Auszahlungskonto überwiesen — häufigere Rhythmen sind nach Absprache möglich.</div></details>
+          <details class="fq-item" data-cat="kosten"><summary><span class="fq-n">03</span> Welchen buchhalterischen Aufwand habe ich mit Spreat?</summary>
+            <div class="fq-a">Da der Kunde an der Kasse rechtlich direkt beim Produzenten kauft, entfällt der klassische Einkaufs- und Verkaufsprozess für deinen Laden. Spreat übernimmt Zahlungsabwicklung und Rechnungserstellung — der Bürokratieaufwand sinkt um bis zu 95 %.</div></details>
+          <div class="fq-secttl" data-sec="ablauf">Ablauf</div>
+          <details class="fq-item" data-cat="ablauf"><summary><span class="fq-n">04</span> Wann bekomme ich eine Rückmeldung auf meine Anfrage?</summary>
+            <div class="fq-a">Spreat prüft deine Anfrage und leitet sie an die Marke weiter. In der Regel meldet sich die Marke innerhalb weniger Werktage bei dir.</div></details>
+          <details class="fq-item" data-cat="ablauf"><summary><span class="fq-n">05</span> Wie lange bleiben die Produkte in meinem Geschäft?</summary>
+            <div class="fq-a">Standardmäßig sicherst du der Marke zu, die Produkte für eine Mindestlaufzeit von 90 Tagen anzubieten, sofern ihr nichts anderes vereinbart habt. Danach kannst du die Abholung der nicht verkauften Produkte veranlassen — die Rücksendekosten trägt die Marke.</div></details>
+          <div class="fq-secttl" data-sec="ware">Ware &amp; Haftung</div>
+          <details class="fq-item" data-cat="ware"><summary><span class="fq-n">06</span> Wer haftet, wenn Ware in meinem Laden beschädigt oder gestohlen wird?</summary>
+            <div class="fq-a">Ab der Warenannahme haftest du für die bei dir gelagerten Produkte. Schäden durch Kunden oder Diebstahl sind der Marke zu ersetzen und im System zu vermerken. Reguläre Qualitätsverluste, Produktionsfehler oder ablaufende Haltbarkeitsdaten bleiben Risiko der Marke.</div></details>
+          <details class="fq-item" data-cat="ware"><summary><span class="fq-n">07</span> Was passiert bei Umtausch oder Rückgabe durch den Kunden?</summary>
+            <div class="fq-a">Retouren wickelst du direkt vor Ort im Namen der Marke ab und vermerkst sie im System. Ist das Produkt voll funktionstüchtig, nimmst du es wieder in deinen Verkaufsbestand auf. Andernfalls geht es zurück oder wird nach Absprache entsorgt.</div></details>
+          <div class="fq-secttl" data-sec="technik">Technik</div>
+          <details class="fq-item" data-cat="technik"><summary><span class="fq-n">08</span> Muss ich für Spreat mein komplettes Kassensystem umstellen?</summary>
+            <div class="fq-a">Nein. Spreat läuft parallel zu deinem bestehenden System. Dein klassisches Sortiment führst du wie gewohnt weiter. Langfristig auch als alleiniges Hauptsystem nutzbar oder per API tief integrierbar.</div></details>
+      <div class="fq-ask" id="fqAsk">
+        <div class="inner">
+          <div class="bar">
+            <i class="ph ph-chat-circle-dots"></i>
+            <span><b>Frage nicht dabei?</b> Schreib sie uns — wir antworten in der Regel am selben Werktag.</span>
+            <button type="button" class="openb" onclick="fqAskOpen()">Frage stellen</button>
+          </div>
+          <div class="form">
+            <textarea id="fqAskText" placeholder="Deine Frage ans Spreat-Team …"></textarea>
+            <div class="row">
+              <span class="to" id="fqAskTo">Antwort geht an <b id="fqAskMailShow">deine hinterlegte E-Mail</b><button type="button" class="lnk" onclick="fqAskMailEdit()">ändern</button></span>
+              <input type="email" id="fqAskMail" placeholder="deine@mail.de">
+              <button type="button" class="send" onclick="fqAskSend()">Absenden</button>
+            </div>
+            <div class="done" id="fqAskDone"><i class="ph-fill ph-check-circle"></i> <span id="fqAskDoneTxt">Frage ist raus.</span></div>
+          </div>
+        </div>
+      </div>
+      </div>
+      </div>
+      </div>
+    </div>
+  </div>
+<script>
+function fqFilter(cat, el){
+  document.querySelectorAll('#fqNav button').forEach(b=>b.classList.toggle('on', b===el));
+  document.querySelectorAll('#fqBody .fq-item').forEach(x=>{
+    const show = cat==='alle' || x.getAttribute('data-cat')===cat;
+    x.style.display = show?'':'none'; if(!show) x.open=false;
+  });
+  document.querySelectorAll('#fqBody .fq-secttl').forEach(s=>{
+    s.style.display = (cat==='alle' || s.getAttribute('data-sec')===cat)?'':'none';
+  });
+}
+/* Nur eine Frage gleichzeitig offen */
+document.addEventListener('toggle', function(e){
+  const d=e.target;
+  if(!(d instanceof HTMLDetailsElement) || !d.classList.contains('fq-item') || !d.open) return;
+  document.querySelectorAll('.fq-item[open]').forEach(o=>{ if(o!==d) o.open=false; });
+}, true);
+function fqAskOpen(){ document.getElementById('fqAsk').classList.add('open'); document.getElementById('fqAskText').focus(); }
+function fqAskMailEdit(){ const el=document.getElementById('fqAskMail'), to=document.getElementById('fqAskTo');
+  el.style.display='inline-block'; if(to) to.style.display='none'; el.focus(); }
+function fqAskSend(){
+  const t=(document.getElementById('fqAskText').value||'').trim();
+  const m=(document.getElementById('fqAskMail').value||'').trim();
+  if(t.length<5){ alert('Bitte formuliere deine Frage'); return; }
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m)){ fqAskMailEdit(); return; }
+  document.getElementById('fqAskText').value='';
+  document.getElementById('fqAskDone').classList.add('on');
+  document.getElementById('fqAskDoneTxt').textContent='Frage ist raus — wir antworten an '+m+'.';
+}
+(function(){ const el=document.getElementById('fqAskMail'); el.value='demo@spreat.com';
+  document.getElementById('fqAskMailShow').textContent='demo@spreat.com'; })();
+</script>
+</body>
+</html>
