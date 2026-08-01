@@ -2647,12 +2647,50 @@ function selectLocation(locId){
 }
 /* ---- Variante B: Foto-Hero-Ladenprofil (Split Außen/Innen + Galerie + alle Infos) ---- */
 let currentGalLoc=null;
+
+/* Ladenfotos werden NACHGELADEN, nicht über `map_open_locations()` mitgeliefert.
+   Grund: bis zum Cloudflare-Umzug liegen sie als verkleinerte Daten-URL in der Zeile —
+   vier Fotos sind bis zu 2 MB je Laden, und die Karten-RPC bringt über 1100 Zeilen.
+   Die Funktion `retailer_fotos()` (sql/2026-08-01_ladenfotos_fuer_marken.sql) liefert
+   [{slot,url,fx,fy}] und schweigt bei nicht öffentlichen und coming_soon-Läden.
+   Vorher sah die Marke ÜBERHAUPT KEINE Ladenfotos: die RPC hatte das Feld nie,
+   `normLoc()` setzte `fotos: []`. Nur die freenet-Demo hatte fest verdrahtete Bilder. */
+const _fotoCache = new Map();
+function fotoNorm(x){
+  if(!x) return null;
+  if(typeof x === 'string') return { url: photoUrl(x), fx: 50, fy: 50 };
+  if(!x.url) return null;
+  return { url: photoUrl(x.url), fx: (x.fx==null?50:+x.fx), fy: (x.fy==null?50:+x.fy) };
+}
+async function ladeFotos(loc){
+  if(!loc || !loc.loc_id || loc.real === false) return;        // Demo-Gruppen bringen ihre eigenen mit
+  if(_fotoCache.has(loc.loc_id)){ loc.fotos = _fotoCache.get(loc.loc_id); return; }
+  if(typeof sbm === 'undefined') return;
+  try{
+    const {data, error} = await sbm.rpc('retailer_fotos', { p_loc_id: loc.loc_id });
+    if(error){ console.warn('retailer_fotos', error.message); return; }
+    const liste = (Array.isArray(data) ? data : []).map(fotoNorm).filter(Boolean);
+    _fotoCache.set(loc.loc_id, liste);
+    loc.fotos = liste;
+  }catch(e){ console.warn('retailer_fotos', e); }
+}
+/* Nachladen und erst dann neu zeichnen — sonst blitzt die Platzhalter-Kachel auf.
+   ACHTUNG Endlosschleife: Das Neuzeichnen ruft `mitFotos` erneut auf. Beim zweiten Mal
+   liegt der Zwischenspeicher vor, es würde sofort wieder gezeichnet — und so fort.
+   Deshalb wird nur gezeichnet, wenn dieser Aufruf die Fotos WIRKLICH geholt hat. */
+function mitFotos(loc, neuZeichnen){
+  if(!loc || !loc.loc_id) return;
+  if(_fotoCache.has(loc.loc_id)){ loc.fotos = _fotoCache.get(loc.loc_id); return; }
+  ladeFotos(loc).then(()=>{ if(loc.fotos && loc.fotos.length) neuZeichnen(); });
+}
 function storeHeroHtml(loc){
   const nm=esc(loc.group_name||loc.company||'Laden');
-  const f=loc.fotos||[];
+  const f=(loc.fotos||[]).map(fotoNorm).filter(Boolean);
   const locked=!!loc.locked;   // anonymer Laden: Fotos NICHT anklickbar (sonst leakt der Galerie-Titel den Namen)
   const cell=(idx,label,icon)=>{
-    const img=f[idx]?`<img src="${esc(f[idx])}" alt="">`:`<i class="ph ${icon}"></i>`;
+    const img=f[idx]
+      ? `<img src="${esc(f[idx].url)}" alt="" style="object-position:${f[idx].fx}% ${f[idx].fy}%">`
+      : `<i class="ph ${icon}"></i>`;
     const badge=(idx===1&&f.length>2)?`<span class="sh-more"><i class="ph ph-images"></i> +${f.length-2}</span>`:'';
     return locked
       ? `<div class="sh-ph" style="cursor:default">${img}<span class="sh-tag">${label}</span></div>`
@@ -2693,9 +2731,12 @@ function openStoreGal(id){
   // Datenschutz-Gate: bei nicht freigegebenen Läden würde locById() den echten Datensatz zurückgeben
   // und der Galerie-Titel den Namen verraten (z. B. „Q1 Energie AG · Fotos"). Galerie bleibt zu.
   if(!locFreigegeben(loc)){ toast('Fotos und Name sind erst nach Freigabe des Ladens sichtbar'); return; }
-  const f=(loc&&(loc.fotosGross&&loc.fotosGross.length?loc.fotosGross:loc.fotos))||[];
+  /* In der Galerie sieht man die Fotos im Original — der Bildmittelpunkt gilt nur
+     für die beschnittenen Titelbild-Hälften, hier wird nichts beschnitten. */
+  const f=((loc&&(loc.fotosGross&&loc.fotosGross.length?loc.fotosGross:loc.fotos))||[])
+            .map(fotoNorm).filter(Boolean);
   const cells=f.length
-    ? f.map((u,i)=>`<div class="sh-galph sh-galreal"><img src="${esc(u)}" alt=""></div>`)
+    ? f.map((x,i)=>`<div class="sh-galph sh-galreal"><img src="${esc(x.url)}" alt=""></div>`)
     : ['Außenansicht','Innenansicht','Regal','Kassenbereich','Schaufenster'].map(l=>`<div class="sh-galph"><i class="ph ph-image"></i><span>${l}</span></div>`);
   document.getElementById('storeGalTitle').textContent=((loc&&(loc.group_name||loc.company))||'Laden')+' · Fotos';
   document.getElementById('storeGalBody').innerHTML=cells.join('');
@@ -2705,6 +2746,8 @@ function closeStoreGal(){ document.getElementById('storeGal').classList.remove('
 function renderSingleCard(loc){
   if(!locFreigegeben(loc)) return renderGreyCard(loc);   // ohne vollständiges Profil: anonyme Karte
   currentGalLoc=loc;
+  // Fotos kommen nicht aus der Karten-RPC, sie werden je Laden nachgeladen (siehe ladeFotos).
+  mitFotos(loc, ()=>{ if(currentGalLoc===loc) renderSingleCard(loc); });
   const closed=effLoc(loc)==='geschlossen';
   document.getElementById('rcard').innerHTML=
     storeHeroHtml(loc)
@@ -2735,6 +2778,7 @@ function renderGroupCard(gid, clicked){
   if(clicked) lastClickedLoc=clicked;
   else if(lastClickedLoc && lastClickedLoc.group_id!==gid) lastClickedLoc=null;
   const gl=groupLocs(gid); if(!gl.length) return; const g=gl[0]; currentGalLoc=g;
+  mitFotos(g, ()=>{ if(currentGalLoc===g) renderGroupCard(gid, clicked); });
   const all=sel.size>=gl.length; const count=all?gl.length:sel.size;
   const closed=effLoc(g)==='geschlossen';
   const chips=[...sel].slice(0,12).map(id=>{const l=locById(id); return `<span class="chip-pref">${esc(l?(l.ort||'Standort'):'')} <b style="cursor:pointer;opacity:.7" onclick="deselLoc('${id}','${gid}')"><i class="ph ph-x" style="font-size:10px"></i></b></span>`;}).join('');
