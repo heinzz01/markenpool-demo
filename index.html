@@ -1056,8 +1056,13 @@
     color:#aab0b8;margin-bottom:5px}
   .lp-crop-pv .fr{border:1px solid var(--border);border-radius:9px;overflow:hidden;background:#eef1f5}
   .lp-crop-pv .fr img{width:100%;height:100%;object-fit:cover;display:block}
-  .lp-crop-pv.hero .fr{height:56px}
-  .lp-crop-pv.tile .fr{width:100px;height:78px}
+  /* Beide Vorschauen tragen das Seitenverhältnis der Stelle, die sie zeigen — sonst
+     lügt die Vorschau. `--pv-ar` setzt `lpCropSyncAr()` beim Öffnen aus der echten
+     Titelbild-Hälfte; der Startwert gilt nur, bis gemessen wurde.
+     Marken-Sicht: `.sh-split` in marke/markenpool-marke.html, 1fr von zweien à 152 px. */
+  .lp-crop-pv.hero  .fr{aspect-ratio:var(--pv-ar,2.9);height:auto}
+  .lp-crop-pv.marke .fr{aspect-ratio:2.3;height:auto}
+  .lp-crop-pv .pv-note{display:block;margin-top:5px;font-size:10.5px;color:#aab0b8}
   .lp-crop-ft{display:flex;align-items:center;gap:8px;padding:13px 18px;border-top:1px solid var(--border);flex-wrap:wrap}
   .lp-crop-ft button{border-radius:9px;height:34px;padding:0 14px;font-size:12.5px;font-weight:700;cursor:pointer}
   .lp-crop-ft .save{border:1px solid var(--accent);background:var(--accent);color:#fff;margin-left:auto}
@@ -1624,9 +1629,13 @@
         <img id="lpCropImg" alt="" style="display:none">
         <div class="lp-crop-pin" id="lpCropPin" style="display:none"></div>
       </div>
+      <!-- Vorschau zeigt die zwei Stellen, auf die es ankommt. Die frühere „Als Kachel"
+           war die Verwaltungsansicht des Ladens selbst — die sieht keine Marke, sie zu
+           optimieren bringt niemandem etwas (HP 01.08.2026). -->
       <div class="lp-crop-side">
-        <div class="lp-crop-pv hero"><b>Im Titelbild</b><div class="fr"><img id="lpCropPvHero" alt=""></div></div>
-        <div class="lp-crop-pv tile"><b>Als Kachel</b><div class="fr"><img id="lpCropPvTile" alt=""></div></div>
+        <div class="lp-crop-pv hero"><b>Dein Titelbild</b><div class="fr"><img id="lpCropPvHero" alt=""></div></div>
+        <div class="lp-crop-pv marke"><b>So sieht es die Marke</b><div class="fr"><img id="lpCropPvMarke" alt=""></div>
+          <span class="pv-note">Standort-Ansicht im Markenpool</span></div>
       </div>
     </div>
     <div class="lp-crop-ft">
@@ -1959,7 +1968,7 @@
         aussagekräftiger dein Profil (Lage, Filialen, Handelsvolumen), desto höher die Chance, dass die
         Marke zusagt und eine gute Provision für dich herauskommt.</div>
       <div id="pfReqWrap" style="display:none">
-        <button type="button" class="btn btn-ghost" style="width:100%" onclick="openRequestsOverview()"><i class="ph ph-clipboard-text"></i> Meine Anfragen ansehen</button>
+        <button type="button" class="btn btn-ghost" style="width:100%" onclick="openRequestsOverview()"><i class="ph ph-handshake"></i> Meine Handelsbeziehungen</button>
       </div>
       <!-- 1 · Ansprechpartner -->
       <div class="form-section">
@@ -2151,11 +2160,15 @@
       <button class="btn btn-primary" id="reqSubmitBtn" onclick="sendRequest()">Angebot senden</button>
     </div>
   </div>
+  <!-- Nach dem Senden: Der Text nannte „Meine Anfragen" — den Bereich gibt es seit dem
+       28.07. nicht mehr, alles lebt in „Meine Handelsbeziehungen". Dazu sagt der Text
+       jetzt, was als Nächstes passiert, statt nur „erfolgreich". -->
   <div class="ok-state" id="reqOk" style="display:none">
-    <div class="big"><i class="ph ph-check-circle"></i></div><strong id="reqOkTitle" style="font-size:18px;color:var(--text)">Erfolgreich angefragt</strong>
-    <p style="color:var(--muted);font-size:13px;margin-top:6px" id="reqOkBody">Spreat bearbeitet die Anfrage
-      und leitet sie an den Marken weiter.</p>
-    <button class="btn btn-ghost" style="margin-top:16px" onclick="openRequestsOverview()"><i class="ph ph-clipboard-text"></i> Meine Anfragen ansehen</button>
+    <div class="big"><i class="ph ph-check-circle"></i></div><strong id="reqOkTitle" style="font-size:18px;color:var(--text)">Anfrage ist raus</strong>
+    <p style="color:var(--muted);font-size:13px;margin-top:6px" id="reqOkBody">Spreat prüft sie kurz und gibt sie
+      an die Marken weiter. Antworten, Gegenvorschläge und der ganze Verlauf stehen ab jetzt unter
+      <b>Meine Handelsbeziehungen</b> — dort verhandelst du auch weiter.</p>
+    <button class="btn btn-primary" style="margin-top:16px" onclick="openRequestsOverview()"><i class="ph ph-handshake"></i> Zu meinen Handelsbeziehungen</button>
   </div>
 </div>
 
@@ -2546,7 +2559,7 @@ function matchesActiveFilter(p){
 const TIP = {
   prov:'Ø Laden-Provision = der Anteil am Verkaufspreis, den die Marke bereit ist dir als Marge zu überlassen. Das ist ein Richtwert, kein Fixwert und kann dementsprechend noch variieren: Je besser deine Lage und je höher dein monatliches Handelsvolumen, desto mehr kannst du verlangen und nachverhandeln.',
   calc:'Der Margenrechner dient als Kalkulationshilfe: Die Verkäufe pro Monat sind hypothetisch und dienen nur deiner eigenen Margen-Schätzung. Diese Zahlen werden nicht an die Marken übermittelt.',
-  reqflow:'Deine Anfrage geht zuerst an das Spreat-Team. Wir prüfen sie und leiten sie an den Marken weiter. Das ist KEINE verbindliche Produktbestellung.',
+  reqflow:'Deine Anfrage geht zuerst an das Spreat-Team. Wir prüfen sie und leiten sie an die Marken weiter. Das ist KEINE verbindliche Produktbestellung.',
   provlocked:'Registriere dich kostenlos als Laden, um die echten Laden-Provisionen freizuschalten.',
   count:'Anzahl der Produkte dieses Marken, die du in deine Sortiments-Anfrage aufnehmen kannst.',
   avg:'Durchschnittlicher Verkaufspreis (UVP) über alle Produkte dieses Marken — grobe Orientierung pro Verkauf.',
@@ -3436,9 +3449,9 @@ function renderCart(){
   if(!items.length){
     body.innerHTML = `<div class="cart-empty"><div class="big"><i class="ph ph-shopping-cart-simple"></i></div>
       <strong>Noch nichts ausgewählt</strong>
-      <p style="font-size:13px;margin-top:6px">Öffne einen Marken und füge Produkte hinzu —
-      hier kalkulierst du deine Marge und fragst die Marken anschließend an.</p>
-      ${myRequests.length?`<button class="btn btn-ghost" style="margin-top:16px" onclick="openRequestsOverview()"><i class="ph ph-clipboard-text"></i> Meine Anfragen ansehen (${myRequests.length})</button>`:''}</div>`;
+      <p style="font-size:13px;margin-top:6px">Öffne eine Marke und füge Produkte hinzu —
+      hier kalkulierst du deine Marge und fragst die Marke anschließend an.</p>
+      ${myRequests.length?`<button class="btn btn-ghost" style="margin-top:16px" onclick="openRequestsOverview()"><i class="ph ph-handshake"></i> Meine Handelsbeziehungen (${myRequests.length})</button>`:''}</div>`;
     foot.innerHTML = ''; return;
   }
   const toggle = `
@@ -3925,12 +3938,24 @@ function lpCropDraw(){
   document.getElementById('lpCropHint').textContent = has
     ? 'Klick oder zieh im Bild — der markierte Punkt bleibt in jedem Format sichtbar.'
     : 'JPG oder PNG. Das Bild wird beim Wählen automatisch verkleinert.';
-  ['lpCropPvHero','lpCropPvTile'].forEach(id=>{
+  lpCropSyncAr();
+  ['lpCropPvHero','lpCropPvMarke'].forEach(id=>{
     const el=document.getElementById(id);
     el.style.visibility = has?'':'hidden';
     if(has){ el.src=lpCropState.url; el.style.objectPosition=lpCropState.fx+'% '+lpCropState.fy+'%'; }
   });
   if(has){ img.src=lpCropState.url; lpCropMovePin(); }
+}
+/* Die Titelbild-Vorschau bekommt exakt das Seitenverhältnis der echten Hälfte.
+   Ohne das zeigt sie bei `object-fit:cover` einen anderen Ausschnitt als die Seite
+   selbst — und der Nutzer stellt etwas ein, das hinterher anders aussieht.
+   Fällt die Messung aus (Fenster zu, Breite 0), bleibt der Startwert aus dem CSS. */
+function lpCropSyncAr(){
+  const half=document.querySelector('.lp-hero .half');
+  if(!half) return;
+  const r=half.getBoundingClientRect();
+  if(r.width>0 && r.height>0)
+    document.documentElement.style.setProperty('--pv-ar', (r.width/r.height).toFixed(3));
 }
 function lpCropMovePin(){
   const img=document.getElementById('lpCropImg'), pin=document.getElementById('lpCropPin');
@@ -3948,7 +3973,7 @@ function lpCropAt(ev){
   const ct=Math.max(0,Math.min(100, (ev.clientY-r.top )/r.height*100));
   lpCropState.fx=Math.round(cl); lpCropState.fy=Math.round(ct);
   lpCropMovePin();
-  ['lpCropPvHero','lpCropPvTile'].forEach(id=>{
+  ['lpCropPvHero','lpCropPvMarke'].forEach(id=>{
     document.getElementById(id).style.objectPosition=lpCropState.fx+'% '+lpCropState.fy+'%'; });
 }
 async function lpCropPick(input){
