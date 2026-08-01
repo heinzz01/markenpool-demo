@@ -107,6 +107,15 @@
   .reqbulk-c button.set:hover{text-decoration-color:currentColor}
   .reqcol .req-intro{font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5}
   .reqbrand{margin-bottom:16px}
+  /* Eigene Nachricht je Marke — eingeklappt, damit die Liste ruhig bleibt (HP 31.07.) */
+  .reqbrand-msg{margin:8px 0 0}
+  .reqbrand-msg-b{display:inline-flex;align-items:center;gap:7px;background:none;border:0;padding:4px 0;
+    font-size:12.5px;font-weight:700;color:var(--accent-dk);cursor:pointer}
+  .reqbrand-msg-b:hover{color:var(--text)}
+  .reqbrand-msg-b i{font-size:15px}
+  .reqbrand-msg-t{width:100%;margin-top:6px;min-height:64px;resize:vertical;border:1px solid var(--border);
+    border-radius:10px;padding:9px 11px;font:inherit;font-size:13px;outline:none;background:#fff}
+  .reqbrand-msg-t:focus{border-color:var(--accent)}
   .reqbrand-head{display:flex;align-items:center;gap:9px;margin-bottom:6px}
   .reqbrand-head .brand-logo{width:28px;height:28px;font-size:12px}
   .reqbrand-name{font-weight:700;font-size:14px;display:inline-flex;align-items:center;gap:6px}
@@ -847,6 +856,11 @@
   .field.pf-miss > .taginput, .field.pf-miss > input, .field.pf-miss > select,
   .field.pf-miss > .chips, .field.pf-miss > .seg{border:1.5px solid #e5820e!important;background:#fffdf7;border-radius:10px}
   .field.pf-miss > label:after{content:' Pflicht';color:#e5484d;font-weight:800;font-size:10.5px;letter-spacing:.03em}
+  /* dieselbe Markierung im Profil-Tab (dort heißt das Feld .lp-fld, nicht .field) */
+  .lp-fld.lp-miss > .lp-inp, .lp-fld.lp-miss > .lp-chips,
+  .lp-fld.lp-miss > .lp-seg, .lp-fld.lp-miss > .lp-taginp{border:1.5px solid #e5820e!important;background:#fffdf7;border-radius:10px}
+  .lp-fld.lp-miss > .lp-lbl:after{content:' Pflicht';color:#e5484d;font-weight:800;font-size:10.5px;letter-spacing:.03em}
+  #lpTodo{margin:14px 22px 0}
   /* Glückwunsch-Banner: erstes Produkt mit abgestimmten Konditionen */
   .hb-congrats{background:linear-gradient(120deg,#177a42,#2CB461);border-radius:14px;padding:20px 22px;color:#fff;display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin:0 0 16px}
   .hb-congrats .cg-ic{width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.16);display:grid;place-items:center;font-size:24px;flex:0 0 auto}
@@ -938,6 +952,12 @@
   .hb-pth{width:52px;height:52px;border-radius:9px;background:linear-gradient(135deg,#e9edf2,#dde3ea);flex:0 0 auto;display:grid;place-items:center;color:#9aa4b1;overflow:hidden;font-size:20px}
   .hb-pth img{width:100%;height:100%;object-fit:cover}
   .hb-pnm{font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  /* „Neu" = seit deinem letzten Blick passiert (Punkt 11). Bewusst blau und nicht
+     orange — orange ist für „Aktion nötig" reserviert, und beides ist nicht dasselbe.
+     ⚠️ Identisch in `marke/markenpool-marke.html`. */
+  .hb-new{display:inline-flex;align-items:center;background:#e8f0fe;color:#1a56c4;border:1px solid #c9dcfb;
+    border-radius:999px;padding:2px 8px;font-size:10.5px;font-weight:800;letter-spacing:.02em;
+    line-height:1.5;margin-left:7px;vertical-align:middle;white-space:nowrap;flex:0 0 auto}
   .hb-b{background:#fff;border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;line-height:1;white-space:nowrap;color:var(--text);cursor:pointer}
   .hb-b-yes{background:var(--accent);border-color:var(--accent);color:#fff}
   .hb-b-ghost{background:none;border-color:transparent;color:var(--muted)}
@@ -999,6 +1019,52 @@
     display:grid;place-items:center;font-size:11.5px;font-weight:600;color:#7b828c;overflow:hidden}
   .lp-ph.miss{border:1.5px dashed var(--border);background:var(--bg);color:var(--muted)}
   .lp-ph img{width:100%;height:100%;object-fit:cover}
+  /* Fotos: jede Kachel ist anklickbar — belegte wie leere. Klick öffnet den Zuschnitt
+     dieses einen Fotos, ohne Umweg über ein anderes Formular. */
+  .lp-ph{cursor:pointer;position:relative;padding:0;border-width:1px;font:inherit}
+  .lp-ph:hover{border-color:var(--accent)}
+  .lp-ph.miss:hover{color:var(--green);background:var(--accent-soft)}
+  .lp-ph .lab{position:absolute;left:0;right:0;bottom:0;background:rgba(16,18,29,.62);color:#fff;
+    font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 0;text-align:center}
+  .lp-ph .plus{font-size:17px;line-height:1;margin-bottom:3px;display:block}
+  .lp-hero .half{cursor:pointer}
+  .lp-hero .half .edge{position:absolute;right:10px;top:10px;z-index:2;background:rgba(255,255,255,.92);
+    border:1px solid var(--border);border-radius:999px;width:26px;height:26px;display:grid;place-items:center;
+    font-size:13px;color:var(--muted)}
+  .lp-hero .half:hover .edge{color:var(--green);border-color:var(--accent)}
+  /* Zuschnitt-Fenster: ein wählbarer Bildmittelpunkt statt eines Ausschnitts je Verwendung.
+     Titelbild-Hälfte (~3:1) und Kachel (~1,3:1) sind zu verschieden für einen gemeinsamen
+     Ausschnitt; ein Fokuspunkt trägt beide und braucht nur eine Bilddatei. */
+  .lp-crop{position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;padding:20px}
+  .lp-crop.open{display:flex}
+  .lp-crop-bg{position:absolute;inset:0;background:rgba(16,18,29,.55)}
+  .lp-crop-box{position:relative;background:var(--card);border-radius:16px;width:min(760px,100%);
+    max-height:92vh;overflow:auto;box-shadow:0 18px 60px rgba(16,18,29,.3)}
+  .lp-crop-hd{display:flex;align-items:center;gap:10px;padding:15px 18px;border-bottom:1px solid var(--border)}
+  .lp-crop-hd b{font-size:15px;letter-spacing:-.01em}
+  .lp-crop-hd .x{margin-left:auto;border:none;background:none;font-size:17px;color:var(--muted);cursor:pointer;padding:2px 4px}
+  .lp-crop-bd{padding:16px 18px;display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:16px}
+  @media(max-width:700px){.lp-crop-bd{grid-template-columns:1fr}}
+  .lp-crop-stage{position:relative;border-radius:12px;overflow:hidden;background:#eef1f5;display:grid;place-items:center;
+    min-height:210px;cursor:crosshair;touch-action:none}
+  .lp-crop-stage img{max-width:100%;max-height:340px;display:block;user-select:none;-webkit-user-drag:none}
+  .lp-crop-pin{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;
+    border:2px solid #fff;background:rgba(44,180,97,.85);box-shadow:0 2px 8px rgba(16,18,29,.35);pointer-events:none}
+  .lp-crop-empty{display:grid;place-items:center;gap:8px;color:var(--muted);font-size:13px;text-align:center;padding:26px}
+  .lp-crop-side{display:grid;gap:12px;align-content:start}
+  .lp-crop-pv b{display:block;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+    color:#aab0b8;margin-bottom:5px}
+  .lp-crop-pv .fr{border:1px solid var(--border);border-radius:9px;overflow:hidden;background:#eef1f5}
+  .lp-crop-pv .fr img{width:100%;height:100%;object-fit:cover;display:block}
+  .lp-crop-pv.hero .fr{height:56px}
+  .lp-crop-pv.tile .fr{width:100px;height:78px}
+  .lp-crop-ft{display:flex;align-items:center;gap:8px;padding:13px 18px;border-top:1px solid var(--border);flex-wrap:wrap}
+  .lp-crop-ft button{border-radius:9px;height:34px;padding:0 14px;font-size:12.5px;font-weight:700;cursor:pointer}
+  .lp-crop-ft .save{border:1px solid var(--accent);background:var(--accent);color:#fff;margin-left:auto}
+  .lp-crop-ft .ghost{border:1px solid var(--border);background:var(--card);color:var(--text)}
+  .lp-crop-ft .del{border:1px solid var(--border);background:var(--card);color:#b4553a}
+  .lp-crop-ft .hint{font-size:11.5px;color:var(--muted);flex-basis:100%;margin-top:2px}
+  .lp-crop-ft button[disabled]{opacity:.5;cursor:default}
   .lp-desc-ta{width:100%;min-height:120px;border:1px solid var(--border);border-radius:10px;padding:10px 12px;font:inherit;
     font-size:13.5px;line-height:1.6;outline:none;resize:vertical;background:var(--card)}
   .lp-desc-ta:focus{border-color:var(--accent)}
@@ -1027,6 +1093,9 @@
   .lp-bar button{border-radius:9px;height:32px;padding:0 14px;font-size:12.5px;font-weight:700;cursor:pointer}
   .lp-bar .save{border:1px solid var(--accent);background:var(--accent);color:#fff}
   .lp-bar .cancel{border:1px solid var(--border);background:var(--card);color:var(--text)}
+  /* Im Bearbeiten-Modus sind die Kennzahlen doppelt — sie stehen weiter unten als Felder.
+     Kopf (Titelbild, Logo, Name, Adresse) bleibt bewusst stehen. */
+  body.lp-editing .lp-kpis{display:none}
   .lp-fld{margin-bottom:12px}
   .lp-lbl{display:block;font-size:12px;font-weight:700;margin-bottom:5px}
   .lp-lbl .rq{color:#d0764f}
@@ -1263,8 +1332,8 @@
       <div class="pp-card" onclick="startAsEinzelhaendler()">
         <div class="pp-ico"><i class="ph ph-shopping-bag"></i></div>
         <h3>Als Laden</h3>
-        <p>Stell dir dein Wunschsortiment aus geprüften Marken zusammen, kalkuliere deine Marge und frag alles mit einem Klick an. Kein Warenrisiko, keine Fixkosten.</p>
-        <div class="pp-cta">Als Laden starten →</div>
+        <p>Stell dir dein Wunschsortiment aus geprüften Marken zusammen, kalkuliere deine Marge und frag alles mit einem Klick an. Kein Warenrisiko, keine Fixkosten — umschauen kannst du dich ohne Anmeldung.</p>
+        <div class="pp-cta">Brandpool entdecken →</div>
       </div>
       <div class="pp-card" onclick="startAsMarke()">
         <div class="pp-ico"><i class="ph ph-tag"></i></div>
@@ -1275,7 +1344,6 @@
     </div>
     <div class="pp-login">Schon registriert? <a href="javascript:void(0)" onclick="loginAsHaendler()">Als Laden anmelden</a> · <a href="javascript:void(0)" onclick="loginAsMarke()">Als Marke anmelden</a></div>
     <div class="pp-dev" id="ppDev" style="display:none"><span class="pp-dev-tag">DEV</span> Schnell-Login ohne Code: <a href="javascript:void(0)" onclick="devLogin('haendler')">Als Laden (Demo-Laden)</a> · <a href="javascript:void(0)" onclick="devLogin('marke')">Als Marke (Brudi &amp; Brezel)</a></div>
-    <div class="pp-foot">Erst mal umschauen ist ausdrücklich erlaubt — registrieren kannst du dich jederzeit, kostenlos und unverbindlich.</div>
   </div>
 </div>
 
@@ -1523,9 +1591,9 @@
         </div>
       </div>
       <div class="lp-card">
-        <h3><i class="ph ph-images"></i> Fotos <button class="ed" onclick="openProfileEdit()">verwalten</button></h3>
+        <h3><i class="ph ph-images"></i> Fotos <button class="ed" onclick="lpSetMode('edit')">bearbeiten</button></h3>
         <div class="lp-photos" id="lpVPhotos"></div>
-        <div style="font-size:11.5px;color:var(--muted);margin-top:9px">Außen und Innen bilden zugleich dein Titelbild.</div>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:9px">Außen und Innen bilden zugleich dein Titelbild. Klick auf ein Feld, um das Foto zu tauschen oder den Bildausschnitt zu wählen.</div>
       </div>
       <div class="lp-card">
         <h3><i class="ph ph-toggle-right"></i> Verfügbarkeit <button class="ed" onclick="lpSetMode('edit')">ändern</button></h3>
@@ -1534,8 +1602,41 @@
           <div class="lp-sw"><button class="knob" id="lpFSw" onclick="lpToggleAvail()"></button>
             <div><b id="lpFSwT">Offen für neue Marken</b><span id="lpFSwH">Marken dürfen dich anfragen</span></div></div>
         </div>
-        <div style="font-size:11.5px;color:var(--muted);margin-top:9px">Steuert, ob Marken dich anfragen dürfen.</div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Foto bearbeiten: Bild wählen + Bildmittelpunkt setzen. Gehört zum Profil-Tab (Region lp*). -->
+<div class="lp-crop" id="lpCrop" aria-modal="true" role="dialog">
+  <div class="lp-crop-bg" onclick="lpCropClose()"></div>
+  <div class="lp-crop-box">
+    <div class="lp-crop-hd">
+      <i class="ph ph-crop"></i><b id="lpCropTtl">Foto bearbeiten</b>
+      <button class="x" onclick="lpCropClose()" aria-label="Schließen"><i class="ph ph-x"></i></button>
+    </div>
+    <div class="lp-crop-bd">
+      <div class="lp-crop-stage" id="lpCropStage">
+        <div class="lp-crop-empty" id="lpCropEmpty">
+          <i class="ph ph-image" style="font-size:26px"></i>
+          <span>Noch kein Foto — wähl unten eines aus.</span>
+        </div>
+        <img id="lpCropImg" alt="" style="display:none">
+        <div class="lp-crop-pin" id="lpCropPin" style="display:none"></div>
+      </div>
+      <div class="lp-crop-side">
+        <div class="lp-crop-pv hero"><b>Im Titelbild</b><div class="fr"><img id="lpCropPvHero" alt=""></div></div>
+        <div class="lp-crop-pv tile"><b>Als Kachel</b><div class="fr"><img id="lpCropPvTile" alt=""></div></div>
+      </div>
+    </div>
+    <div class="lp-crop-ft">
+      <label class="ghost" style="display:inline-flex;align-items:center;padding:0 14px;line-height:34px">
+        <span id="lpCropPickTxt">Foto wählen</span>
+        <input type="file" accept="image/*" hidden id="lpCropFile" onchange="lpCropPick(this)">
+      </label>
+      <button class="del" id="lpCropDel" onclick="lpCropRemove()">Entfernen</button>
+      <button class="save" id="lpCropOk" onclick="lpCropApply()">Übernehmen</button>
+      <span class="hint" id="lpCropHint">Klick ins Bild, um festzulegen, welcher Punkt immer sichtbar bleibt.</span>
     </div>
   </div>
 </div>
@@ -1583,20 +1684,12 @@
     <div style="font-size:12.5px;color:var(--muted);margin-top:3px" id="hbCtrMeta">—</div>
     <div style="display:flex;gap:22px;margin-top:16px;flex-wrap:wrap">
       <div>
-        <label style="font-size:12px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)">Provision</label>
-        <div style="display:flex;align-items:center;gap:7px;margin-top:7px">
-          <button class="hb-b" style="width:34px;height:34px;padding:0" onclick="hbCtrStep(-1)">−</button>
-          <input id="hbCtrVal" type="number" min="0" max="100" style="width:70px;text-align:center;border:1px solid var(--border);border-radius:9px;height:34px;font-size:15px;font-weight:800">
-          <span style="font-size:14px;font-weight:800">%</span>
-          <button class="hb-b" style="width:34px;height:34px;padding:0" onclick="hbCtrStep(1)">+</button>
-        </div>
+        <label style="font-size:12px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)">Provision für dich</label>
+        <div style="margin-top:7px" id="hbCtrProvBox"></div>
       </div>
       <div>
-        <label style="font-size:12px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)">Erstlieferung <span style="color:#e5484d">*</span></label>
-        <div style="display:flex;align-items:center;gap:7px;margin-top:7px">
-          <input id="hbCtrMng" type="number" min="1" placeholder="z. B. 60" style="width:96px;text-align:center;border:1.5px solid #e5820e;border-radius:9px;height:34px;font-size:15px;font-weight:800;background:#fffdf7">
-          <span style="font-size:13px;font-weight:700;color:var(--muted)">Stück</span>
-        </div>
+        <label style="font-size:12px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)">Erstlieferung <span style="color:#e5820e">*</span></label>
+        <div style="margin-top:7px" id="hbCtrMngBox"></div>
       </div>
     </div>
     <div style="background:#f6f7f9;border:1px solid var(--border);border-radius:10px;padding:11px 13px;font-size:12.5px;color:#4b5058;margin-top:14px;display:flex;gap:8px;align-items:flex-start">
@@ -2020,12 +2113,12 @@
           <div class="reqbulk-cells">
             <div class="reqbulk-c">
               <span class="rp-lbl">Erstlieferung</span>
-              <span class="rp-step"><input type="number" id="bulkMenge" min="1" placeholder="12"><span class="rp-pct">Stk</span></span>
+              <span id="bulkMengeBox"></span>
               <button type="button" class="set" onclick="reqBulkMenge()">alle setzen</button>
             </div>
             <div class="reqbulk-c">
               <span class="rp-lbl">Provision</span>
-              <span class="rp-step"><input type="number" id="bulkProv" min="0" max="100" placeholder="30"><span class="rp-pct">%</span></span>
+              <span id="bulkProvBox"></span>
               <button type="button" class="set" onclick="reqBulkProv()">alle setzen</button>
             </div>
           </div>
@@ -2047,8 +2140,9 @@
         <label style="display:flex;gap:9px;align-items:flex-start;font-size:12.5px;line-height:1.45;margin:0 0 14px;padding:0 2px">
           <input type="checkbox" id="reqAskCap" style="accent-color:#2563eb;margin-top:2px">
           <span>Lieferkapazitäten vorab erfragen — die Marke antwortet im Chat und kann die Menge direkt per Gegenvorschlag setzen.</span></label>
-        <div class="field"><label>Persönliche Nachricht (optional)</label>
-          <textarea id="reqMsg" placeholder="Nachricht zu deiner Anfrage – füge ggf. Lieferzeit und Zielgruppe hinzu."></textarea></div>
+        <div class="field"><label>Nachricht an alle Marken (optional)</label>
+          <textarea id="reqMsg" placeholder="Nachricht zu deiner Anfrage – füge ggf. Lieferzeit und Zielgruppe hinzu."></textarea>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px">Gilt für jede Marke, die noch keine eigene Nachricht hat. Eine eigene setzt du oben direkt bei der Marke.</div></div>
         <div class="form-err" id="reqErr" style="display:none"></div>
       </div>
     </div>
@@ -2068,12 +2162,14 @@
 <!-- Ablehn-Grund (intern für Spreat) -->
 <div class="chat-ov" id="rejModal" onclick="if(event.target===this)closeRej()">
   <div class="chat-box" style="height:auto;max-width:460px">
-    <div class="chat-head"><b>Produkt ablehnen</b><button class="x-close" onclick="closeRej()"><i class="ph ph-x"></i></button></div>
+    <div class="chat-head"><b id="rejTitle">Produkt ablehnen</b><button class="x-close" onclick="closeRej()"><i class="ph ph-x"></i></button></div>
     <div style="padding:16px">
-      <p style="font-size:13px;color:var(--muted);margin:0 0 10px">Schreib uns kurz, warum dieses Produkt nicht passt. <b>Nur für Spreat</b> — die Marke sieht das nicht. So können wir dir bessere Vorschläge machen.</p>
-      <textarea id="rejReason" placeholder="z. B. Preisniveau passt nicht · schon im Sortiment · kein Platz · Marge zu gering …" style="width:100%;min-height:96px"></textarea>
+      <p class="rej-lead" id="rejLead">Woran lag's?</p>
+      <div class="rej-chips" id="rejChips"></div>
+      <textarea id="rejReason" class="rej-free" placeholder="Noch etwas dazu? (optional)"></textarea>
+      <div class="rej-note"><i class="ph ph-shield-check"></i> Nur für Spreat — die Marke bekommt das nicht zu sehen.</div>
     </div>
-    <div class="chat-foot" style="justify-content:flex-end;gap:8px"><button class="btn btn-ghost" onclick="closeRej()">Abbrechen</button><button class="btn btn-primary" onclick="submitReject()">Ablehnen &amp; senden</button></div>
+    <div class="chat-foot" style="justify-content:flex-end;gap:8px"><button class="btn btn-ghost" onclick="closeRej()">Abbrechen</button><button class="btn btn-primary" id="rejSubmit" onclick="submitReject()">Ablehnen</button></div>
   </div>
 </div>
 
@@ -2083,6 +2179,44 @@
   <div class="cv-panel" id="cvSlidePanel"></div>
 </div>
 <style>
+  /* ============================================================================
+     Zahlenfeld mit Schrittknöpfen — EINE Komponente für alles (HP 31.07., Punkt 5)
+     Vorher stand das Plus hinter der Einheit („12 Stück +") und die Felder waren
+     zu breit. Jetzt liegt der Wert samt Einheit in der Mitte, Minus und Plus
+     sitzen symmetrisch außen.
+     ⚠️ Identisch in `marke/markenpool-marke.html` — beide Seiten gleich halten.
+     Hinweis: Die `.rp-step`-Felder im Angebots-Composer gehören Session L und
+     sind hier bewusst NICHT angefasst; sie werden nachgezogen, sobald L fertig ist.
+     ============================================================================ */
+  .nstep{display:inline-flex;align-items:stretch;height:34px;border:1px solid var(--border);
+    border-radius:9px;background:#fff;overflow:hidden;flex:0 0 auto}
+  .nstep-b{width:30px;border:0;background:#fff;color:var(--muted);font-size:15px;font-weight:600;
+    cursor:pointer;display:grid;place-items:center;font-family:inherit;padding:0;line-height:1}
+  .nstep-b:hover{background:var(--bg);color:var(--text)}
+  .nstep-v{display:flex;align-items:center;border-left:1px solid var(--border);border-right:1px solid var(--border)}
+  .nstep-in{width:46px;border:0;text-align:right;font-size:14px;font-weight:700;color:var(--text);
+    background:none;outline:none;font-family:inherit;padding:0;-moz-appearance:textfield}
+  .nstep-in::-webkit-outer-spin-button,.nstep-in::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .nstep-u{font-size:12px;font-weight:600;color:var(--muted);padding:0 8px 0 3px;white-space:nowrap}
+  .nstep:focus-within{border-color:var(--accent)}
+  .nstep.sm{height:29px}
+  .nstep.sm .nstep-b{width:25px;font-size:13px}
+  .nstep.sm .nstep-in{width:38px;font-size:12.5px}
+  .nstep.sm .nstep-u{font-size:11px;padding:0 6px 0 2px}
+
+  /* Ablehn-Fenster, Variante A (HP 31.07.): ein Klick statt eines Satzes.
+     Spiegelbildlich zu `marke/markenpool-marke.html` — beide Seiten gleich halten. */
+  .rej-lead{font-size:14px;font-weight:700;margin:0 0 10px}
+  .rej-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
+  .rej-chip{background:var(--bg);border:1px solid var(--border);border-radius:999px;padding:7px 13px;
+    font-size:12.5px;font-weight:600;color:var(--text);cursor:pointer;font-family:inherit;line-height:1.2}
+  .rej-chip:hover{border-color:#c3cbd4}
+  .rej-chip.on{background:var(--accent-soft);border-color:#bfe6cf;color:var(--accent-dk)}
+  .rej-free{width:100%;min-height:72px;border:1px solid var(--border);border-radius:10px;padding:10px 12px;
+    font:inherit;font-size:13px;line-height:1.5;outline:none;resize:vertical;box-sizing:border-box}
+  .rej-free:focus{border-color:var(--accent)}
+  .rej-free::placeholder{color:#aab0b8}
+  .rej-note{display:flex;gap:7px;align-items:flex-start;font-size:12px;color:var(--muted);margin-top:10px;line-height:1.45}
   /* von rejModal weiterverwendet */
   .chat-ov{position:fixed;inset:0;background:rgba(16,18,29,.6);display:none;place-items:center;z-index:120;padding:20px}
   .chat-ov.open{display:grid}
@@ -2724,7 +2858,14 @@ function logSearch(q, count){
   _searchLogTimer = setTimeout(() => {
     if(q === _lastLoggedSearch) return;
     _lastLoggedSearch = q;
-    try { sb.from('search_logs').insert({ query: q, result_count: count }); } catch(e){}
+    /* Ohne `.then()` schickt supabase-js gar nichts ab — der Aufbau ist erst dann eine
+       Zusage, wenn jemand auf sie wartet. Deshalb blieb `search_logs` leer, obwohl der
+       Code aussah, als würde er schreiben (geprüft 01.08.2026: Tabelle hatte 0 Zeilen).
+       Kein `.select()` anhängen: dafür bräuchte anon Leserechte, die es bewusst nicht hat. */
+    sb.from('search_logs')
+      .insert({ query: q.slice(0,200), result_count: count })
+      .then(({error}) => { if(error) console.warn('search_logs', error.message); })
+      .catch(e => console.warn('search_logs', e));
   }, 900);
 }
 // Empty-State: Wunsch-Feld, wenn eine Suche/ein Filter aktiv war und nichts gefunden wurde.
@@ -2767,6 +2908,13 @@ async function submitProductWish(){
   document.getElementById('brandGrid').innerHTML =
     '<div class="wish-box"><div class="wish-emoji"><i class="ph ph-check-circle"></i></div><div class="wish-title">' + thanks + '</div></div>';
 }
+/* Produkt-Treffer: Name UND Beschreibung. Viele Produkte heißen nach der Marke, nicht nach
+   der Sache — „Shrub" oder „glutenfrei" steht nur in der Beschreibung. Kategorien bleiben
+   bewusst außen vor, sonst schlägt eine Suche gleich auf ganze Kategorien durch. */
+function prodMatch(M, p){
+  if(!p) return false;
+  return M.test(p.produktname) || M.test(p.beschreibung);
+}
 function renderBrands(){
   maybeSetDefaultMine();
   if(!_brands){ return; }
@@ -2783,7 +2931,7 @@ function renderBrands(){
     if(!M.active) return true;
     if(M.test(b.name)) return true;
     if(M.test(b.kurzbeschreibung)) return true;
-    return dataProvider.getProducts(b.marken_id).some(p => M.test(p.produktname));
+    return dataProvider.getProducts(b.marken_id).some(p => prodMatch(M,p));
   });
   if(SORT_PROV) brands.sort((a,b)=>brandTopProv(b)-brandTopProv(a));
   lastFilterCount = brands.length;
@@ -2806,7 +2954,7 @@ function renderBrands(){
     const prods = dataProvider.getProducts(b.marken_id);
     const brandMatch = M.active && (M.test(b.name) || M.test(b.kurzbeschreibung));
     // Such-Treffer (nur wenn die Suche die Marke selbst NICHT trifft)
-    const searchHits = (M.active && !brandMatch) ? prods.filter(p => M.test(p.produktname)) : [];
+    const searchHits = (M.active && !brandMatch) ? prods.filter(p => prodMatch(M,p)) : [];
     // Kontext aus aktivem Branchen-Filter (z.B. Könner&Söhne unter "Kochen & Essen")
     const filterHits = (!searchHits.length && FILTER.haupt) ? prods.filter(p => p.sichtbar!==false && matchesActiveFilter(p)) : [];
     let preview;
@@ -3101,7 +3249,7 @@ function renderProducts(){
   let ps = dataProvider.getProducts(activeBrand.marken_id);
   if(activeCat === 'Top Seller') ps = ps.filter(p => p.featured_bestaetigt);
   else if(activeCat !== 'Alle') ps = ps.filter(p => p.kategorie === activeCat);
-  if(M.active) ps = ps.filter(p => M.test(p.produktname));
+  if(M.active) ps = ps.filter(p => prodMatch(M,p));
   // Reihenfolge: Treffer des aktiven Branchen-Filters zuerst, dann Featured (Hero), dann nach Position.
   // ABER: Größenvarianten derselben Sorte (0,25 l / 0,1 l …) müssen nebeneinander stehen —
   // sonst reißt ein Featured-Flag auf der großen Flasche die kleine ans Ende der Liste und der
@@ -3384,6 +3532,7 @@ function openRequest(){
   document.getElementById('reqPopupTitle').textContent = 'Angebot an Marken';
   document.getElementById('reqSubmitBtn').textContent = 'Angebot senden';
   renderReqSummary(groups);
+  reqBulkPrefill();   // Sammelfelder mit echten Werten füllen statt nur Platzhalter zu zeigen
   document.getElementById('reqForm').style.display = '';
   document.getElementById('reqOk').style.display = 'none';
   document.getElementById('overlay').classList.add('open');
@@ -3407,34 +3556,72 @@ function renderReqSummary(groups){
           <div class="reqitem-steps">
           <div class="reqitem-prov">
             <span class="rp-lbl">Erstlieferung</span>
-            <div class="rp-step">
-              <button type="button" aria-label="weniger" onclick="reqMenge('${jsq(pid)}',-1)">−</button>
-              <input type="number" id="rmg-${pid}" value="${o.menge!=null?o.menge:''}" min="1" onchange="reqMengeSet('${jsq(pid)}',this.value)">
-              <span class="rp-pct">Stk</span>
-              <button type="button" aria-label="mehr" onclick="reqMenge('${jsq(pid)}',1)">+</button>
-            </div>
+            ${nstepHtml({id:'rmg-'+pid, value:(o.menge!=null?o.menge:''), min:1, unit:'Stk', sm:true,
+                         onchange:`reqMengeSet('${jsq(pid)}',this.value)`})}
           </div>
           <div class="reqitem-prov">
             <span class="rp-lbl">Provision</span>
-            <div class="rp-step">
-              <button type="button" aria-label="weniger" onclick="reqProv('${jsq(pid)}',-1)">−</button>
-              <input type="number" id="rpv-${pid}" value="${o.prov}" min="0" max="100" onchange="reqProvSet('${jsq(pid)}',this.value)">
-              <span class="rp-pct">%</span>
-              <button type="button" aria-label="mehr" onclick="reqProv('${jsq(pid)}',1)">+</button>
-            </div>
+            ${nstepHtml({id:'rpv-'+pid, value:o.prov, min:0, max:100, unit:'%', sm:true,
+                         onchange:`reqProvSet('${jsq(pid)}',this.value)`})}
           </div>
           </div>
         </div>`; }).join('')}
+      <div class="reqbrand-msg">
+        <button type="button" class="reqbrand-msg-b" onclick="reqMsgToggle('${jsq(g.brand.marken_id)}')">
+          <i class="ph ph-note-pencil"></i> <span id="reqMsgLbl-${g.brand.marken_id}">Eigene Nachricht an ${escTxt(g.brand.name)}</span>
+        </button>
+        <textarea id="reqMsg-${g.brand.marken_id}" class="reqbrand-msg-t" style="display:none"
+          placeholder="Nur diese Marke liest das. Leer lassen = die gemeinsame Nachricht unten gilt."></textarea>
+      </div>
     </div>`).join('');
 }
+/* Eigene Nachricht je Marke (HP 31.07.): Eine Anfrage kann mehrere Marken treffen — eine
+   einzige Nachricht passt dann selten allen. Das gemeinsame Feld unten bleibt die Vorlage,
+   hier überschreibt man sie gezielt. Gespeichert in `request_brands.nachricht`
+   (Migration sql/2026-08-01_nachricht_je_marke.sql); leer heißt: gemeinsame Nachricht gilt. */
+function reqMsgToggle(mid){
+  const t=document.getElementById('reqMsg-'+mid), l=document.getElementById('reqMsgLbl-'+mid);
+  if(!t) return;
+  const zu = t.style.display==='none';
+  t.style.display = zu ? '' : 'none';
+  if(zu){ t.focus(); } else if(!t.value.trim() && l){ l.textContent = l.textContent.replace(' — gesetzt',''); }
+}
+function reqMsgWerte(){
+  const out={};
+  document.querySelectorAll('#reqSummary .reqbrand-msg-t').forEach(t=>{
+    const v=(t.value||'').trim();
+    if(v) out[t.id.replace(/^reqMsg-/,'')] = v.slice(0,4000);
+  });
+  return out;
+}
+/* Die beiden Sammelfelder starteten leer und zeigten „12" bzw. „30" nur als Platzhalter.
+   Das liest sich wie ein gesetzter Wert — wer auf „alle setzen" klickte, landete in der
+   Leer-Prüfung, und scheinbar passierte nichts (HP, 31.07.2026). Zwei Gegenmaßnahmen:
+   `reqBulkPrefill()` schreibt beim Öffnen echte Werte hinein, und leer bleibende Felder
+   fallen unten auf den Platzhalter zurück, statt den Klick verpuffen zu lassen. */
+function reqBulkWert(id){
+  const el=document.getElementById(id); if(!el) return NaN;
+  const roh=(el.value!==''&&el.value!=null)?el.value:el.getAttribute('placeholder');
+  return parseInt(roh,10);
+}
+function reqBulkPrefill(){
+  const werte=Object.values(reqOffer);
+  const haeufigster=(liste)=>{ const z={}; liste.forEach(v=>{ z[v]=(z[v]||0)+1; });
+    return Object.keys(z).sort((a,b)=>z[b]-z[a]||a-b)[0]; };
+  const menge = werte.length ? (haeufigster(werte.map(o=>Number(o.menge)||0).filter(n=>n>0))||'') : '';
+  const prov  = werte.length ? (haeufigster(werte.map(o=>Number(o.prov)||0))||'') : '';
+  const boxM=document.getElementById('bulkMengeBox'), boxP=document.getElementById('bulkProvBox');
+  if(boxM) boxM.innerHTML=nstepHtml({id:'bulkMenge', value:menge, min:1, unit:'Stk', sm:true, placeholder:'12'});
+  if(boxP) boxP.innerHTML=nstepHtml({id:'bulkProv',  value:prov,  min:0, max:100, unit:'%', sm:true, placeholder:'30'});
+}
 function reqBulkMenge(){
-  const v=parseInt((document.getElementById('bulkMenge')||{}).value,10);
+  const v=reqBulkWert('bulkMenge');
   if(isNaN(v)||v<1){ if(typeof toast==='function') toast('Bitte eine Menge eingeben'); return; }
   Object.keys(reqOffer).forEach(pid=>reqMengeSet(pid,v));
   if(typeof toast==='function') toast('Erstlieferung für alle Positionen: '+v+' Stück');
 }
 function reqBulkProv(){
-  const v=parseInt((document.getElementById('bulkProv')||{}).value,10);
+  const v=reqBulkWert('bulkProv');
   if(isNaN(v)){ if(typeof toast==='function') toast('Bitte eine Provision eingeben'); return; }
   Object.keys(reqOffer).forEach(pid=>reqProvSet(pid,v));
   if(typeof toast==='function') toast('Provision für alle Positionen: '+Math.max(0,Math.min(100,v))+' %');
@@ -3472,12 +3659,25 @@ async function sendRequest(){
   const orig = btn.textContent;
   btn.disabled = true; btn.textContent = 'Wird gesendet …';
   err.style.display = 'none';
-  const {error} = await sb.rpc('submit_request', {
+  const perMarke = reqMsgWerte();          // eigene Nachricht je Marke, leer = Vorlage gilt
+  const {data: reqId, error} = await sb.rpc('submit_request', {
     p_items: items,
     p_nachricht: fullMsg || null,
     p_lieferzeit_tage: hdrLz,
     p_abweichende_lieferzeit: abw
   });
+  /* Die RPC legt Anfrage und `request_brands`-Zeilen an (Trigger `rb_from_item`).
+     Erst danach lassen sich die markenspezifischen Nachrichten setzen. Schlägt das
+     fehl, ist die Anfrage trotzdem draußen — dann gilt die gemeinsame Nachricht,
+     und der Laden verliert nichts außer der Feinheit. */
+  if(!error && reqId && Object.keys(perMarke).length){
+    await Promise.all(Object.entries(perMarke).map(([mid, txt]) =>
+      sb.from('request_brands').update({nachricht: txt})
+        .eq('request_id', reqId).eq('marken_id', mid)
+        .then(({error:e}) => { if(e) console.warn('Nachricht je Marke', mid, e.message); },
+              e => console.warn('Nachricht je Marke', mid, e))
+    ));
+  }
   btn.disabled = false; btn.textContent = orig;
   if(error){
     err.textContent = 'Angebot konnte nicht gesendet werden: ' + error.message;
@@ -3561,7 +3761,7 @@ function openNavMenu(){
   let h = '';
   if(session.loggedIn){
     h += `<div class="navsheet-acct">✓ ${escTxt(session.email)}</div>`;
-    h += `<button onclick="closeNavMenu();openProfileEdit()"><i class="ph ph-user"></i> Profil &amp; meine Anfragen</button>`;
+    h += `<button onclick="closeNavMenu();lpOpenTab(false)"><i class="ph ph-storefront"></i> Mein Ladenprofil</button>`;
   }
   h += `<button onclick="closeNavMenu();openCart()"><i class="ph ph-shopping-cart-simple"></i> Meine Sortiments-Anfrage</button>`;
   h += `<button onclick="closeNavMenu();openFaq()"><i class="ph ph-question"></i> FAQ</button>`;
@@ -3583,10 +3783,13 @@ function closeNavMenu(){
 /* ===== Profil-Tab: Inline-Bearbeiten (ersetzt das alte Popup) ===== */
 const LP_PRICING = [['Preisbewusst','günstig im Alltag'],['Solide Mitte','Preis-Leistung'],
   ['Gehoben','markenorientiert'],['Premium','hochwertig'],['Luxus','exklusiv']];
-let lpSel = {branches:new Set(), pricing:new Set(), no:[], seek:[], pref:[], avail:true};
+const LP_BRANCH_MAX = 2;   // Schwerpunkt heißt Schwerpunkt — mehr als zwei ist keiner mehr.
+let lpSel = {branches:new Set(), pricing:new Set(), no:[], seek:[], pref:[], avail:true, photos:{}};
 function lpSetMode(m){
   if(m==='edit'){ lpFill(); document.body.classList.add('lp-editing'); }
   else { document.body.classList.remove('lp-editing'); document.getElementById('lpErr').style.display='none'; }
+  // Fotos neu zeichnen: beim Verwerfen müssen ungespeicherte Bilder wieder verschwinden.
+  if(typeof lpRenderPhotos==='function') lpRenderPhotos();
   const b=document.getElementById('lpEditBtn'); if(b) b.style.display = m==='edit'?'none':'';
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -3595,7 +3798,19 @@ function lpChips(){
   c.innerHTML = BRANCHES.map(b=>'<button type="button" class="lp-chip'+(lpSel.branches.has(b)?' on':'')+
     '" onclick="lpToggleBranch(\''+jsq(b)+'\')">'+escTxt(b)+'</button>').join('');
 }
-function lpToggleBranch(b){ lpSel.branches.has(b)?lpSel.branches.delete(b):lpSel.branches.add(b); lpChips(); }
+// Höchstens zwei Schwerpunkte. Bestehende Datensätze mit mehr bleiben unangetastet —
+// geblockt wird nur das Hinzufügen, Abwählen geht immer.
+function lpToggleBranch(b){
+  if(lpSel.branches.has(b)) lpSel.branches.delete(b);
+  else {
+    if(lpSel.branches.size>=LP_BRANCH_MAX){
+      if(typeof toast==='function') toast('Höchstens '+LP_BRANCH_MAX+' Schwerpunkte — wähl einen ab, um zu tauschen.');
+      return;
+    }
+    lpSel.branches.add(b);
+  }
+  lpChips();
+}
 function lpPricing(){
   const c=document.getElementById('lpFPricing'); if(!c) return;
   c.innerHTML = LP_PRICING.map(([v,sub])=>'<button type="button" class="'+(lpSel.pricing.has(v)?'on':'')+
@@ -3631,6 +3846,149 @@ function lpToggleAvail(){
   document.getElementById('lpFSwH').textContent = lpSel.avail?'Marken dürfen dich anfragen'
     :'Du erscheinst grau auf der Karte und bekommst keine Anfragen';
 }
+/* ===== Ladenfotos: Speicherschicht, Verkleinerung, Bildmittelpunkt =====
+   ÜBERGANGSLÖSUNG (HP, 31.07.2026: „morgen Cloudflare einrichten").
+   Bis R2 steht, wird das im Browser verkleinerte Bild als data-URL in der bereits
+   vorhandenen Spalte `retailers.fotos` (jsonb) abgelegt — kein neuer Supabase-Storage-
+   Write, die Regel aus Brandpool/BILDSPEICHER.md bleibt eingehalten.
+   EINZIGER AUSTAUSCHPUNKT für R2 ist lpPhotoPut(): dort später hochladen und die
+   R2-URL zurückgeben. Alles andere in dieser Datei bleibt unverändert, weil überall
+   nur `url` gelesen wird. Beim Umzug gilt die Notiz zur R2-Umstellung:
+   Pfad = Item-ID, Upload vor DB-Schreiben, Cache-Busting, keine ID-Wiederverwendung. */
+const LP_PHOTO_SLOTS = [['aussen','Außen'],['innen','Innen'],['regal','Regal'],['schaufenster','Schaufenster']];
+const LP_PHOTO_MAX = 1400;    // längste Kante in Pixeln
+const LP_PHOTO_Q   = 0.82;    // JPEG-Qualität
+// Altformat (nackte data-URL als String) auf {url,fx,fy} heben. fx/fy = Bildmittelpunkt in Prozent.
+function lpPhotoNorm(v){
+  if(!v) return null;
+  if(typeof v==='string') return {url:v, fx:50, fy:50};
+  if(typeof v==='object' && v.url) return {url:v.url, fx:(v.fx==null?50:+v.fx), fy:(v.fy==null?50:+v.fy)};
+  return null;
+}
+function lpPhotos(p){
+  const src=(p&&p.photos)||{}, out={};
+  LP_PHOTO_SLOTS.forEach(([k])=>{ const n=lpPhotoNorm(src[k]); if(n) out[k]=n; });
+  // Altbestand aus dem früheren Formular: extra1/extra2 hießen dort, was hier Regal/Schaufenster ist.
+  if(!out.regal){ const n=lpPhotoNorm(src.extra1); if(n) out.regal=n; }
+  if(!out.schaufenster){ const n=lpPhotoNorm(src.extra2); if(n) out.schaufenster=n; }
+  return out;
+}
+function lpPos(ph){ return ph ? (ph.fx+'% '+ph.fy+'%') : '50% 50%'; }
+// Bild verkleinern, damit weder Zeile noch Netz an einem Handyfoto ersticken.
+function lpShrink(file){
+  return new Promise((res,rej)=>{
+    const rd=new FileReader();
+    rd.onerror=()=>rej(new Error('Datei nicht lesbar'));
+    rd.onload=()=>{
+      const img=new Image();
+      img.onerror=()=>rej(new Error('Das ist kein lesbares Bild.'));
+      img.onload=()=>{
+        const s=Math.min(1, LP_PHOTO_MAX/Math.max(img.width,img.height));
+        const c=document.createElement('canvas');
+        c.width=Math.max(1,Math.round(img.width*s)); c.height=Math.max(1,Math.round(img.height*s));
+        const cx=c.getContext('2d');
+        cx.fillStyle='#fff'; cx.fillRect(0,0,c.width,c.height);   // PNG-Transparenz nicht schwarz werden lassen
+        cx.drawImage(img,0,0,c.width,c.height);
+        res(c.toDataURL('image/jpeg', LP_PHOTO_Q));
+      };
+      img.src=rd.result;
+    };
+    rd.readAsDataURL(file);
+  });
+}
+async function lpPhotoPut(file){ return await lpShrink(file); }   // ← hier kommt der R2-Upload rein
+
+/* ---- Zuschnitt-Fenster: ein Foto wählen und seinen Bildmittelpunkt setzen ---- */
+let lpCropSlot=null, lpCropState=null;
+function lpCropOpen(slot){
+  if(!LP_PHOTO_SLOTS.some(([k])=>k===slot)) return;
+  // Fotos bearbeitet man im Bearbeiten-Modus — sonst stünde die Änderung ohne Speichern da.
+  if(!document.body.classList.contains('lp-editing')) lpSetMode('edit');
+  lpCropSlot=slot;
+  const cur=lpSel.photos[slot];
+  lpCropState = cur ? {url:cur.url, fx:cur.fx, fy:cur.fy} : null;
+  const lbl=(LP_PHOTO_SLOTS.find(([k])=>k===slot)||[])[1]||'Foto';
+  document.getElementById('lpCropTtl').textContent = lbl+'-Foto';
+  document.getElementById('lpCropFile').value='';
+  lpCropDraw();
+  document.getElementById('lpCrop').classList.add('open');
+}
+function lpCropClose(){ document.getElementById('lpCrop').classList.remove('open'); lpCropSlot=null; lpCropState=null; }
+function lpCropDraw(){
+  const has=!!(lpCropState&&lpCropState.url);
+  const img=document.getElementById('lpCropImg'), pin=document.getElementById('lpCropPin');
+  document.getElementById('lpCropEmpty').style.display = has?'none':'';
+  img.style.display = has?'':'none'; pin.style.display = has?'':'none';
+  document.getElementById('lpCropDel').disabled = !lpSel.photos[lpCropSlot];
+  document.getElementById('lpCropOk').disabled  = !has;
+  document.getElementById('lpCropPickTxt').textContent = has?'Anderes Foto wählen':'Foto wählen';
+  document.getElementById('lpCropHint').textContent = has
+    ? 'Klick oder zieh im Bild — der markierte Punkt bleibt in jedem Format sichtbar.'
+    : 'JPG oder PNG. Das Bild wird beim Wählen automatisch verkleinert.';
+  ['lpCropPvHero','lpCropPvTile'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.style.visibility = has?'':'hidden';
+    if(has){ el.src=lpCropState.url; el.style.objectPosition=lpCropState.fx+'% '+lpCropState.fy+'%'; }
+  });
+  if(has){ img.src=lpCropState.url; lpCropMovePin(); }
+}
+function lpCropMovePin(){
+  const img=document.getElementById('lpCropImg'), pin=document.getElementById('lpCropPin');
+  const st=document.getElementById('lpCropStage');
+  if(!img.offsetWidth) return;
+  const r=img.getBoundingClientRect(), s=st.getBoundingClientRect();
+  pin.style.left=(r.left-s.left + r.width *lpCropState.fx/100)+'px';
+  pin.style.top =(r.top -s.top  + r.height*lpCropState.fy/100)+'px';
+}
+function lpCropAt(ev){
+  if(!lpCropState||!lpCropState.url) return;
+  const img=document.getElementById('lpCropImg'); const r=img.getBoundingClientRect();
+  if(!r.width) return;
+  const cl=Math.max(0,Math.min(100, (ev.clientX-r.left)/r.width *100));
+  const ct=Math.max(0,Math.min(100, (ev.clientY-r.top )/r.height*100));
+  lpCropState.fx=Math.round(cl); lpCropState.fy=Math.round(ct);
+  lpCropMovePin();
+  ['lpCropPvHero','lpCropPvTile'].forEach(id=>{
+    document.getElementById(id).style.objectPosition=lpCropState.fx+'% '+lpCropState.fy+'%'; });
+}
+async function lpCropPick(input){
+  const f=input.files&&input.files[0]; if(!f) return;
+  const hint=document.getElementById('lpCropHint');
+  if(!/^image\//.test(f.type)){ hint.textContent='Das ist kein Bild — bitte JPG oder PNG wählen.'; input.value=''; return; }
+  hint.textContent='Bild wird verkleinert …';
+  try{
+    const url=await lpPhotoPut(f);
+    lpCropState={url, fx:50, fy:50};
+    lpCropDraw();
+  }catch(e){
+    console.error('lpCropPick', e);
+    hint.textContent='Das Bild konnte nicht gelesen werden. Bitte ein anderes wählen.';
+  }
+  input.value='';
+}
+function lpCropApply(){
+  if(!lpCropSlot||!lpCropState||!lpCropState.url) return;
+  lpSel.photos[lpCropSlot]={url:lpCropState.url, fx:lpCropState.fx, fy:lpCropState.fy};
+  lpCropClose(); lpRenderPhotos();
+  if(typeof toast==='function') toast('Foto übernommen — jetzt noch speichern.');
+}
+function lpCropRemove(){
+  if(!lpCropSlot) return;
+  delete lpSel.photos[lpCropSlot];
+  lpCropClose(); lpRenderPhotos();
+  if(typeof toast==='function') toast('Foto entfernt — jetzt noch speichern.');
+}
+(function lpCropWire(){
+  const st=document.getElementById('lpCropStage'); if(!st) return;
+  let down=false;
+  st.addEventListener('pointerdown', e=>{ down=true; st.setPointerCapture&&st.setPointerCapture(e.pointerId); lpCropAt(e); });
+  st.addEventListener('pointermove', e=>{ if(down) lpCropAt(e); });
+  ['pointerup','pointercancel','pointerleave'].forEach(t=>st.addEventListener(t, ()=>{ down=false; }));
+  window.addEventListener('resize', ()=>{ if(lpCropState&&lpCropState.url) lpCropMovePin(); });
+  document.addEventListener('keydown', e=>{
+    if(e.key==='Escape' && document.getElementById('lpCrop').classList.contains('open')) lpCropClose(); });
+})();
+
 function lpFill(){
   const p=(session&&session.profile)||{};
   const v=(id,val)=>{ const el=document.getElementById(id); if(el) el.value=val||''; };
@@ -3646,10 +4004,44 @@ function lpFill(){
   lpSel.seek = lpList(p.seeking).slice();
   lpSel.pref = lpList(p.prefs).slice();
   lpSel.avail = (p.status||'offen')!=='geschlossen';
+  lpSel.photos = lpPhotos(p);
   lpChips(); lpPricing();
   lpTagBox('lpFNoGos','no'); lpTagBox('lpFSeek','seek'); lpTagBox('lpFPrefs','pref');
   document.getElementById('lpFSw').classList.toggle('off', !lpSel.avail);
   document.getElementById('lpFSwT').textContent = lpSel.avail?'Offen für neue Marken':'Geschlossen für neue Marken';
+}
+/* ---- Speichern: Zielzeile, Spalten-Rückfall, Row-Check ----
+   GEMESSEN am 31.07.2026, nicht vermutet:
+   (1) `retailers` hat weder `ladenname` noch `beschreibung` (Session D legt sie an, STAND.md Punkt 1).
+       Solange sie fehlen, hat lpSave den Ladennamen in `ansprechpartner_name` mit dem
+       ANSPRECHPARTNER überschrieben. Beim Neuladen las loadProfile daraus wieder den
+       Ladennamen — die eingetragene Person war weg. Das war der gemeldete Bug.
+   (2) Die alte Fassung zielte mit `.eq('email', session.email)`. Die Demo-Zeile trägt
+       (interne Adresse); jede andere @spreat.com-Adresse traf null Zeilen, und beim
+       Impersonieren (?admin_as=) hätte sie die falsche Zeile getroffen. Ziel ist jetzt
+       dieselbe ID wie in loadProfile/saveProfile.
+   (3) Ohne `.select()` meldet PostgREST auch bei null getroffenen Zeilen keinen Fehler —
+       der Toast log. Jetzt wird die zurückgegebene Zeile geprüft (Muster adminWrite()).
+   RLS war unschuldig: die Policies auf `retailers` greifen über die ID, nicht über die E-Mail. */
+const LP_NEUE_SPALTEN = ['ladenname','beschreibung'];
+let lpSpaltenDa = true;   // wird beim ersten Fehlschlag auf false gesetzt
+async function lpZielId(){
+  const {data:{user}} = await sb.auth.getUser();
+  if(!user) return null;
+  return canImpersonate(user.email) ? ADMIN_AS
+       : (isSpreatEmail(user.email) ? DEMO_RETAILER_ID : user.id);
+}
+async function lpUpdate(rid, patch, fallbackPatch){
+  const ohne = () => sb.from('retailers').update(fallbackPatch).eq('id', rid).select('id');
+  if(!lpSpaltenDa){ const r=await ohne(); r.ohneNeueSpalten=true; return r; }
+  let r = await sb.from('retailers').update(patch).eq('id', rid).select('id');
+  const fehltSpalte = r.error && LP_NEUE_SPALTEN.some(c=>String(r.error.message||'').includes(c));
+  if(fehltSpalte){
+    console.warn('lpSave: Spalten', LP_NEUE_SPALTEN.join('/'), 'fehlen noch — Rückfall ohne sie.', r.error.message);
+    lpSpaltenDa = false;
+    r = await ohne(); r.ohneNeueSpalten = true;
+  }
+  return r;
 }
 async function lpSave(){
   const g=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
@@ -3670,8 +4062,7 @@ async function lpSave(){
   const btn=document.getElementById('lpSaveBtn'); const label=btn.textContent;
   btn.disabled=true; btn.textContent='Speichere …';
   const desc=(document.getElementById('lpDescTa').value||'').trim();
-  const patch={
-    ansprechpartner_name: person || shop,
+  const gemeinsam={
     ansprechpartner_funktion: role,
     telefon: phone,
     adresse: addr,
@@ -3683,26 +4074,47 @@ async function lpSave(){
     no_gos: lpSel.no.length?lpSel.no:null,
     praeferenzen: lpSel.pref.length?lpSel.pref:null,
     gesuche: lpSel.seek.length?lpSel.seek:null,
-    offenheits_status: lpSel.avail?'offen':'geschlossen'
+    offenheits_status: lpSel.avail?'offen':'geschlossen',
+    fotos: Object.keys(lpSel.photos).length ? lpSel.photos : null
   };
-  let ok=false;
+  // Mit den neuen Spalten: Laden und Person stehen getrennt, beides bleibt erhalten.
+  const patch = Object.assign({ladenname: shop, beschreibung: desc,
+    ansprechpartner_name: person || shop}, gemeinsam);
+  // Ohne sie trägt ansprechpartner_name den LADENNAMEN. Die Person lieber gar nicht
+  // schreiben als den Ladennamen dafür zu opfern — sie hält dann nur die Sitzung.
+  const patchAlt = Object.assign({ansprechpartner_name: shop}, gemeinsam);
+
+  let ok=false, teilweise=false, grund='';
   try{
-    if(session.loggedIn && session.email){
-      const r=await sb.from('retailers').update(patch).eq('email', session.email);
-      ok=!r.error; if(r.error) console.error('lpSave', r.error);
+    const rid = await lpZielId();
+    if(!rid){ grund='Sitzung abgelaufen — bitte neu anmelden.'; }
+    else {
+      const r = await lpUpdate(rid, patch, patchAlt);
+      if(r.error){ console.error('lpSave', r.error); grund=r.error.message||'Datenbank hat abgelehnt.'; }
+      else if(!r.data || !r.data.length){
+        // Kein Fehler, aber auch keine Zeile: RLS hat nichts getroffen. Nicht als Erfolg verkaufen.
+        console.error('lpSave: 0 Zeilen getroffen für retailer', rid);
+        grund='Kein Datensatz getroffen — fehlende Berechtigung oder abgelaufene Sitzung.';
+      }
+      else { ok=true; teilweise=!!r.ohneNeueSpalten; }
     }
-  }catch(e){ console.error('lpSave', e); }
+  }catch(e){ console.error('lpSave', e); grund=e.message||'Unerwarteter Fehler.'; }
+
   session.profile = Object.assign({}, session.profile, {
     beschreibung: desc,
     shopName: shop, name: person || shop, role, phone, email: mail, addr, area, stores,
-    branch: patch.branche, pricing: patch.preis_positionierung, volume: patch.handelsvolumen,
+    branch: gemeinsam.branche, pricing: gemeinsam.preis_positionierung, volume: gemeinsam.handelsvolumen,
     noGos: lpSel.no.slice(), seeking: lpSel.seek.slice(), prefs: lpSel.pref.slice(),
-    status: patch.offenheits_status
+    status: gemeinsam.offenheits_status,
+    photos: JSON.parse(JSON.stringify(lpSel.photos))
   });
   btn.disabled=false; btn.textContent=label;
-  lpSetMode('view'); lpRender();
+  if(!ok){ fail('Nicht gespeichert: '+grund+' Deine Eingaben stehen noch im Formular.'); return; }
+  lpSetMode('view'); lpRender(); lpMarkMissing();
   if(typeof renderAuth==='function') renderAuth();
-  if(typeof toast==='function') toast(ok?'Profil gespeichert':'Profil in dieser Sitzung übernommen — Speichern in der DB fehlgeschlagen');
+  if(typeof toast==='function') toast(teilweise
+    ? 'Gespeichert — Ladenname und Beschreibung halten nur diese Sitzung (Spalten fehlen noch).'
+    : 'Profil gespeichert');
 }
 /* ===== Tab „Mein Ladenprofil" — Vorschau aus dem gespeicherten Profil ===== */
 function lpTag(t,kind){ const c={no:'tagchip nogo',seek:'tagchip seek',pref:'tagchip pref'}[kind]||'tagchip pref';
@@ -3744,23 +4156,48 @@ function lpRender(){
   fill('lpVNoGos', lpList(p.noGos),'no');
   fill('lpVSeek', lpList(p.seeking),'seek');
   fill('lpVPrefs', lpList(p.prefs),'pref');
-  // Fotos: Außen/Innen ins Titelbild, alle in die Fotokarte
-  const ph = p.photos || {};
-  const slot=(el,src,label)=>{ if(!el) return;
-    el.innerHTML = '<span class="cap">'+label+'</span>' + (src?'<img src="'+escTxt(src)+'" alt="">':'<i class="ph ph-image"></i>'); };
-  slot(document.getElementById('lpPhotoOut'), ph.aussen, 'Außen');
-  slot(document.getElementById('lpPhotoIn'), ph.innen, 'Innen');
-  const order=[['aussen','Außen'],['innen','Innen'],['regal','Regal'],['schaufenster','Schaufenster']];
-  document.getElementById('lpVPhotos').innerHTML = order.map(([k2,l])=>
-    ph[k2] ? '<div class="lp-ph"><img src="'+escTxt(ph[k2])+'" alt=""></div>' : '<div class="lp-ph miss">'+l+'</div>').join('');
-  const lg=document.getElementById('lpLogo');
-  if(lg) lg.innerHTML = ph.aussen ? '<img src="'+escTxt(ph.aussen)+'" alt="">' : '<i class="ph ph-storefront"></i>';
+  lpRenderPhotos();
   // Beschreibung
   const d=(p.beschreibung||'').trim();
   const dv=document.getElementById('lpDescView');
   dv.textContent = d || 'Noch keine Beschreibung — Marken lesen diesen Text zuerst.';
   dv.classList.toggle('empty', !d);
   const ta=document.getElementById('lpDescTa'); if(ta && !document.body.classList.contains('lp-editing')){ ta.value=d; lpDescCount(); }
+}
+/* Titelbild, Fotokacheln und Logo. Jede Kachel ist anklickbar — auch die leere; der Klick
+   öffnet den Zuschnitt genau dieses Fotos. object-position trägt den gewählten Bildmittelpunkt,
+   damit Titelbild (sehr breit) und Kachel (fast quadratisch) dasselbe Bild sinnvoll zeigen. */
+function lpRenderPhotos(){
+  const editing = document.body.classList.contains('lp-editing');
+  const ph = editing ? lpSel.photos : (lpSel.photos = lpPhotos((session&&session.profile)||{}));
+  const half=(el,k,label)=>{ if(!el) return;
+    const f=ph[k];
+    el.setAttribute('role','button'); el.setAttribute('tabindex','0');
+    el.title = (f?'Ausschnitt wählen oder tauschen: ':'Foto hinzufügen: ')+label;
+    el.onclick = ()=>lpCropOpen(k);
+    el.onkeydown = e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); lpCropOpen(k); } };
+    el.innerHTML = '<span class="cap">'+escTxt(label)+'</span>'
+      + '<span class="edge"><i class="ph ph-'+(f?'crop':'plus')+'"></i></span>'
+      + (f ? '<img src="'+esc(f.url)+'" alt="" style="object-position:'+lpPos(f)+'">'
+           : '<i class="ph ph-image"></i>');
+  };
+  half(document.getElementById('lpPhotoOut'), 'aussen', 'Außen');
+  half(document.getElementById('lpPhotoIn'),  'innen',  'Innen');
+  const box=document.getElementById('lpVPhotos');
+  if(box){
+    box.innerHTML = LP_PHOTO_SLOTS.map(([k,l])=>{
+      const f=ph[k];
+      return '<button type="button" class="lp-ph'+(f?'':' miss')+'" onclick="lpCropOpen(\''+jsq(k)+'\')" '
+        + 'title="'+esc(f?('Ausschnitt wählen oder tauschen: '+l):('Foto hinzufügen: '+l))+'">'
+        + (f ? '<img src="'+esc(f.url)+'" alt="" style="object-position:'+lpPos(f)+'"><span class="lab">'+escTxt(l)+'</span>'
+             : '<span class="plus">+</span>'+escTxt(l))
+        + '</button>';
+    }).join('');
+  }
+  const lg=document.getElementById('lpLogo');
+  if(lg) lg.innerHTML = ph.aussen
+    ? '<img src="'+esc(ph.aussen.url)+'" alt="" style="object-position:'+lpPos(ph.aussen)+'">'
+    : '<i class="ph ph-storefront"></i>';
 }
 function lpToggleHelp(){ document.getElementById('lpDescHelp').classList.toggle('open'); }
 function lpDescCount(){ const t=document.getElementById('lpDescTa'); const c=document.getElementById('lpDescCnt');
@@ -3998,6 +4435,10 @@ async function saveProfile(){
     praeferenzen: (p.prefs && p.prefs.length) ? p.prefs : null,
     gesuche: (p.seeking && p.seeking.length) ? p.seeking : null,
     offenheits_status: p.status || 'offen',
+    // [31.07.2026 · Session L] Fotos aus der Registrierung gingen bisher still verloren —
+    // sie standen im Formular, wurden hier aber nie mitgeschrieben. lpPhotos() hebt das
+    // flache Altformat beim Lesen auf {url,fx,fy}.
+    fotos: (p.photos && Object.keys(p.photos).length) ? p.photos : null,
     status: 'neu'
   });
   if(error){ console.error('saveProfile', error); return false; }
@@ -4091,6 +4532,28 @@ function pfMarkMissing(){
   form.insertBefore(box, form.firstChild);
   return miss.length;
 }
+/* Fehlende Pflichtangaben im Profil-Tab markieren — das Gegenstück zu pfMarkMissing(),
+   nur für die Felder im Tab. Die Feld-IDs sind die des Bearbeiten-Modus. */
+const LP_PFLICHT = [['Sortimentsschwerpunkt','lpFBranches'],['Preis-Positionierung','lpFPricing'],
+  ['Das suche ich gerade','lpFSeek'],['Verkaufsfläche','lpFArea'],['Geschäftsadresse','lpFAddr']];
+function lpMarkMissing(){
+  const p = (session && session.profile) || {};
+  const leer = {lpFBranches:!p.branch, lpFPricing:!p.pricing,
+    lpFSeek:!(p.seeking && p.seeking.length), lpFArea:!p.area, lpFAddr:!p.addr};
+  document.querySelectorAll('.lp-fld.lp-miss').forEach(f=>f.classList.remove('lp-miss'));
+  const alt=document.getElementById('lpTodo'); if(alt) alt.remove();
+  const miss = LP_PFLICHT.filter(([,id])=>leer[id]);
+  if(!miss.length) return 0;
+  miss.forEach(([,id])=>{ const el=document.getElementById(id); const f=el&&el.closest('.lp-fld'); if(f) f.classList.add('lp-miss'); });
+  const shell=document.querySelector('#hpane-profil .lp-shell'); if(!shell) return miss.length;
+  const box=document.createElement('div'); box.id='lpTodo'; box.className='pf-todo';
+  box.innerHTML='<span class="pt-ic">!</span><div><b>Noch '+miss.length+' Angabe'+(miss.length===1?'':'n')+', dann finden Marken deinen Laden</b>'
+    +'<p>Marken suchen im Markenpool nach Branche, Preisniveau und dem, was du gerade suchst. Solange diese Felder leer sind, taucht dein Laden in keiner Suche auf und bleibt auf der Karte ein grauer Punkt ohne Namen.</p>'
+    +'<div class="pt-chips">'+miss.map(m=>'<span class="pt-chip">'+escTxt(m[0])+'</span>').join('')+'</div></div>';
+  const anker=document.getElementById('lpErr');
+  shell.insertBefore(box, anker ? anker.nextSibling : shell.firstChild);
+  return miss.length;
+}
 /* Nach dem Login: unvollständiges Profil öffnet direkt das eigene Profil (Brandpool bleibt im Hintergrund). */
 function pfGateIfIncomplete(){
   if(!(session && session.loggedIn && session.profile)) return;
@@ -4099,28 +4562,17 @@ function pfGateIfIncomplete(){
   sessionStorage.setItem('spreat_pf_gate','1');
   openProfileEdit();
 }
-function openProfileEdit(){
-  profileEditMode = true;
-  const p = session.profile || {};
-  document.getElementById('pfName').value = p.name || '';
-  const sn=document.getElementById('pfShopName'); if(sn) sn.value = p.shopName || '';
-  document.getElementById('pfRole').value = p.role || '';
-  document.getElementById('pfPhone').value = p.phone || '';
-  document.getElementById('pfEmail').value = p.email || session.email || '';
-  setProfileBranches(p.branch || '');
-  document.getElementById('pfStores').value = p.stores || '';
-  if(p.volume) document.getElementById('pfVolume').value = p.volume;
-  document.getElementById('pfAddr').value = p.addr || '';
-  document.getElementById('pfIntro').innerHTML = 'Dein Laden-Profil — du kannst es jederzeit anpassen. '+
-    'Unten findest du außerdem deine bisherigen Anfragen.';
-  document.getElementById('pfReqWrap').style.display = '';
-  document.getElementById('pfSubmitBtn').textContent = 'Änderungen speichern';
-  document.getElementById('pfForm').style.display = '';
-  document.getElementById('pfVerify').style.display = 'none';
-  document.getElementById('pfErr').style.display = 'none';
-  document.getElementById('overlay').classList.add('open');
-  document.getElementById('profilePopup').classList.add('open');
-  pfMarkMissing();
+/* [31.07.2026 · Session L] Das alte Profil-Popup ist als BEARBEITEN-Weg abgelöst — Pflege läuft
+   ausschließlich über den Tab „Mein Ladenprofil" (Region lp*). Das Popup selbst bleibt bestehen,
+   weil es die Erst-REGISTRIERUNG trägt (openProfile()); nur wird es nicht mehr zum Ändern geöffnet.
+   openProfileEdit() bleibt als Name erhalten und leitet um, damit kein Aufrufer ins Leere läuft. */
+function openProfileEdit(){ lpOpenTab(true); }
+function lpOpenTab(edit){
+  if(!(session && session.loggedIn)){ openLogin(); return; }
+  if(typeof closeAll==='function') closeAll();
+  hShowPane('profil');                 // setzt bereits lpSetMode('view') + lpRender()
+  if(edit) lpSetMode('edit');
+  lpMarkMissing();
 }
 
 /* ============================================================
@@ -4140,7 +4592,7 @@ function renderAuth(){
     // statt der Admin-E-Mail. Normaler Laden: unverändert die eigene E-Mail.
     const who = (canImpersonate(session.email) && session.profile && session.profile.name)
       ? session.profile.name : session.email;
-    a.innerHTML = `<button class="acct-chip" onclick="openProfileEdit()" title="Profil &amp; Anfragen ansehen"><span class="dot2"></span>${escTxt(who)}</button>
+    a.innerHTML = `<button class="acct-chip" onclick="lpOpenTab(false)" title="Mein Ladenprofil"><span class="dot2"></span>${escTxt(who)}</button>
       <button class="nav-link" onclick="logout()">Abmelden</button>`;
   } else {
     a.innerHTML = `<button class="nav-link" onclick="openProfile()">Registrieren</button>
@@ -4276,7 +4728,7 @@ async function loadMyRequests(){
   try{
     // Pro Marke eine Karte (request_brands) inkl. Verhandlungsstand
     const {data,error} = await sb.from('request_brands')
-      .select('id,marken_id,status,provision,wer_dran,verlauf,typ,requests(id,nachricht,created_at,retailer_id,freigabe,lieferzeit_tage,abweichende_lieferzeit,request_items(produkt_id,menge_pro_monat,provision,lieferzeit_tage,item_status,verlauf))')
+      .select('id,marken_id,status,provision,wer_dran,verlauf,typ,nachricht,requests(id,nachricht,created_at,retailer_id,freigabe,lieferzeit_tage,abweichende_lieferzeit,request_items(produkt_id,menge_pro_monat,provision,lieferzeit_tage,item_status,verlauf))')
       .order('created_at',{ascending:false});
     if(error || !data) return;
     const _eid=effectiveRetailerId();
@@ -4292,7 +4744,8 @@ async function loadMyRequests(){
           istatus:it.item_status||'offen', item_status:it.item_status||'offen', verlauf:Array.isArray(it.verlauf)?it.verlauf:[] }; });
       return {rbId:rb.id, reqId:req.id, markenId: rb.marken_id, brandName: brand?brand.name:'Marke',
         ts: req.created_at?new Date(req.created_at).getTime():Date.now(),
-        nachricht:req.nachricht||'', items, lieferzeit:req.lieferzeit_tage,
+        /* Eigene Nachricht an diese Marke schlägt die gemeinsame — leer heißt: Vorlage gilt. */
+        nachricht:(rb.nachricht||req.nachricht||''), items, lieferzeit:req.lieferzeit_tage,
         freigabe:req.freigabe||'frei',
         status:rb.status, provision:rb.provision, wer_dran:rb.wer_dran||'',
         verlauf:Array.isArray(rb.verlauf)?rb.verlauf:[]};
@@ -4343,15 +4796,47 @@ function oItemRowHtml(r,it,idx){
   </div>`;
 }
 function oItemCounterToggle(cid){ const d=document.getElementById(cid); if(d) d.style.display=d.style.display==='none'?'flex':'none'; }
-/* Ablehn-Grund-Popup (intern für Spreat) — Empfangsseite (in) + Absenderseite (out) */
-let _rejCtx=null;
-function askReject(which,id,idx){ _rejCtx={which,id,idx};
+/* ============================================================================
+   Ablehn-Grund-Popup (intern für Spreat) — Empfangsseite (in) + Absenderseite (out)
+   Variante A (HP 31.07.): anklickbare Gründe + optionaler Freitext.
+   Grund: bei acht Produkten schreibt niemand acht Sätze — ein Klick schon.
+   ⚠️ Spiegelbildlich in `marke/markenpool-marke.html` — beide gleich halten.
+   ============================================================================ */
+const REJ_REASONS=['Preis / Marge','Schon im Sortiment','Kein Platz','Zielgruppe passt nicht','Sonstiges'];
+let _rejCtx=null, _rejPicked=new Set();
+function renderRejChips(){
+  const c=document.getElementById('rejChips'); if(!c) return;
+  c.innerHTML=REJ_REASONS.map(r=>
+    `<button type="button" class="rej-chip${_rejPicked.has(r)?' on':''}" onclick="rejToggle('${r.replace(/'/g,"\\'")}')">${escTxt(r)}</button>`
+  ).join('');
+}
+function rejToggle(r){ if(_rejPicked.has(r)) _rejPicked.delete(r); else _rejPicked.add(r); renderRejChips(); }
+/* Was in `ablehnung_grund_intern` landet: die gewählten Gründe, dann der Freitext. */
+function rejValue(){
+  const free=((document.getElementById('rejReason')||{}).value||'').trim();
+  const chips=[..._rejPicked].join(' · ');
+  return [chips,free].filter(Boolean).join(' — ');
+}
+/* mode: 'ablehnen' (Standard) oder 'zurueckziehen' (eigene Anfrage vom Tisch nehmen) */
+function askReject(which,id,idx,mode){
+  _rejCtx={which,id,idx,mode:mode||'ablehnen'};
+  _rejPicked=new Set();
   const t=document.getElementById('rejReason'); if(t) t.value='';
+  const alle = idx==='all' || idx==='allPartner';
+  const zurueck = _rejCtx.mode==='zurueckziehen';
+  const ttl=document.getElementById('rejTitle');
+  if(ttl) ttl.textContent = zurueck ? 'Anfrage zurückziehen' : (alle ? 'Alle offenen Produkte ablehnen' : 'Produkt ablehnen');
+  const lead=document.getElementById('rejLead');
+  if(lead) lead.textContent = zurueck ? 'Warum nimmst du sie vom Tisch?'
+    : (alle ? "Woran lag's? Gilt für alle offenen Produkte." : "Woran lag's?");
+  const btn=document.getElementById('rejSubmit');
+  if(btn) btn.textContent = zurueck ? 'Zurückziehen' : (alle ? 'Alle ablehnen' : 'Ablehnen');
+  renderRejChips();
   document.getElementById('rejModal').classList.add('open');
-  setTimeout(()=>{ const t=document.getElementById('rejReason'); if(t) t.focus(); },60);
 }
 function closeRej(){ document.getElementById('rejModal').classList.remove('open'); _rejCtx=null; }
-function submitReject(){ const c=_rejCtx; if(!c) return; const reason=((document.getElementById('rejReason')||{}).value||'').trim(); closeRej();
+function submitReject(){ const c=_rejCtx; if(!c) return; const reason=rejValue(); closeRej();
+  if(c.idx==='allPartner'){ hbBulkPartner('abgelehnt',reason); return; }
   if(c.idx==='all'){ if(c.which==='in') bulkH(c.id,'abgelehnt',reason); else if(c.which==='out') bulkO(c.id,'abgelehnt',reason); }
   else { if(c.which==='in') hItemDecide(c.id,c.idx,'abgelehnt',reason); else if(c.which==='out') oItemDecide(c.id,c.idx,'abgelehnt',reason); }
 }
@@ -5269,6 +5754,9 @@ async function loadRealIncoming(){
       }:null; }).filter(Boolean);
     return {id:'br-'+br.id, real:true, brId:br.id, b,
       status:br.status||'neu', wer_dran:br.wer_dran||'', provision:br.provision,
+      // `date` ist deutsch formatiert und damit nicht vergleichbar — der Lesestand
+      // (Punkt 11) braucht den rohen Zeitstempel.
+      createdAt: br.created_at||'',
       date: br.created_at?new Date(br.created_at).toLocaleDateString('de-DE'):'',
       msg:br.nachricht||'', verlauf:Array.isArray(br.verlauf)?br.verlauf:[], items,
       itemProds:items.map(i=>i.p)};
@@ -5363,7 +5851,9 @@ async function hSyncAgg(r){
   const {error}=await sb.from('brand_requests').update({status:a.status,wer_dran:a.wer}).eq('id',r.brId);
   if(error) console.error('hSyncAgg',error);
 }
-async function hItemDecide(brId,idx,status,reason){
+/* `quiet` unterdrückt Toast und Neuzeichnen — nötig für die Sammelaktion,
+   sonst blinken bei acht Produkten acht Meldungen durch. */
+async function hItemDecide(brId,idx,status,reason,quiet){
   const r=(incomingReqs||[]).find(x=>x.brId===brId); if(!r) return;
   const it=r.items[idx]; if(!it) return;
   const verlauf=(it.verlauf||[]).concat([{von:'haendler',provision:it.provision,text:status==='angenommen'?'Angenommen':('Abgelehnt'+(reason?': '+reason:'')),ts:new Date().toISOString()}]);
@@ -5371,7 +5861,9 @@ async function hItemDecide(brId,idx,status,reason){
   const {error}=await sb.from('brand_request_items').update(patch).eq('brand_request_id',brId).eq('produkt_id',it.produkt_id);
   if(error){ console.error('hItemDecide',error); if(typeof toast==='function') toast('Konnte Produkt nicht speichern'); return; }
   it.item_status=status; it.verlauf=verlauf;
-  await hSyncAgg(r); renderIncoming(); if(typeof refreshHReqBadge==='function') refreshHReqBadge();
+  await hSyncAgg(r);
+  if(quiet) return;
+  renderIncoming(); if(typeof refreshHReqBadge==='function') refreshHReqBadge();
   if(typeof toast==='function') toast(status==='angenommen'?'Produkt angenommen':'Produkt abgelehnt');
 }
 async function hItemCounter(brId,idx,cid){
@@ -5408,6 +5900,7 @@ function hShowPane(name){
     hbBack();
     const l=document.getElementById('hbList'); if(l) l.innerHTML='<div class="state-msg">Lädt …</div>';
     Promise.all([
+      seenInit().catch(()=>{}),   // Lesestand fürs „Neu"-Badge (Punkt 11)
       (session.loggedIn?loadMyRequests():Promise.resolve()).catch(e=>{ console.error('loadMyRequests',e); }),
       loadIncoming().catch(e=>{ console.error('loadIncoming',e); })
     ]).then(()=>{
@@ -5436,9 +5929,68 @@ const HB_ST={
   wait:  {c:'#9aa0a8', t:'#9aa0a8', i:'ph-fill ph-hourglass-medium', l:'Warten'},
   deal:  {c:'#2CB461', t:'#0f7a44', i:'ph-fill ph-handshake',        l:'Konditionen geeinigt'}
 };
+/* ============================================================================
+   Lesestand — „Neu"-Badge auf noch nicht gesehenen Schritten (HP 31.07., Punkt 11)
+   ENTSCHEIDUNG HP: der Lesestand gehört in die DATENBANK (Tabelle `seen`, gebaut
+   von Session D), damit er geräteübergreifend gilt. Bis dahin localStorage —
+   gleiche Schnittstelle, deshalb ist die Umstellung später kein Umbau.
+   Spaltenwunsch an D steht ausführlich in `marke/markenpool-marke.html`.
+   ⚠️ Spiegelbildlich zu ebendieser Datei — beide Seiten gleich halten.
+   ============================================================================ */
+const SEEN_LS='spreat_seen_v1';
+let _seenMap=null, _seenDb=false;
+function seenLoadLocal(){ try{ return JSON.parse(localStorage.getItem(SEEN_LS)||'{}'); }catch(e){ return {}; } }
+function seenSaveLocal(){ try{ localStorage.setItem(SEEN_LS, JSON.stringify(_seenMap||{})); }catch(e){} }
+async function seenInit(){
+  if(_seenMap) return;
+  _seenMap=seenLoadLocal();
+  if(typeof sb==='undefined' || !(session && session.loggedIn)) return;
+  try{
+    const {data,error}=await sb.from('seen').select('objekt_id,gesehen_am').eq('objekt_typ','hb_item');
+    if(!error && data){ _seenDb=true; data.forEach(r=>{ _seenMap[r.objekt_id]=r.gesehen_am; }); seenSaveLocal(); }
+  }catch(e){ console.warn('seen: Lesestand nur lokal', e); }
+}
+/* Seit 01.08.2026 steht die Tabelle `seen` (sql/2026-08-01_seen_lesestand.sql), der
+   Lesestand gilt damit geraeteuebergreifend. Der Browser-Speicher bleibt als Rueckfall
+   fuer den Fall, dass die Abfrage scheitert — dann ist das Badge wieder geraetelokal,
+   aber es verschwindet nicht. */
+function seenGet(k){ return (_seenMap||{})[k]||''; }
+function seenSet(k,stamp){
+  if(!_seenMap) _seenMap={};
+  if(_seenMap[k] && String(_seenMap[k])>=String(stamp)) return;
+  _seenMap[k]=stamp; seenSaveLocal();
+  if(_seenDb){ try{ sb.from('seen').upsert({objekt_typ:'hb_item',objekt_id:k,gesehen_am:stamp},
+    {onConflict:'user_id,objekt_typ,objekt_id'}).then(()=>{},()=>{}); }catch(e){} }
+}
+function hbItemKey(x){
+  const rid = x.dir==='in' ? x.req.brId : x.req.rbId;
+  return x.dir+'|'+rid+'|'+(x.it.produkt_id!=null?x.it.produkt_id:x.idx);
+}
+/* Vergleichbarer Zeitstempel. Die beiden Loader liefern unterschiedliche Formen
+   (`createdAt` als ISO-Text, `ts` als Millisekunden) — hier auf ISO vereinheitlicht. */
+function hbStamp(v){
+  if(v==null||v==='') return '';
+  if(typeof v==='number') return new Date(v).toISOString();
+  return String(v);
+}
+function hbItemStamp(x){
+  const ev=x.it.verlauf||[];
+  for(let i=ev.length-1;i>=0;i--){ if(ev[i]&&ev[i].ts) return hbStamp(ev[i].ts); }
+  return hbStamp(x.req.createdAt!=null&&x.req.createdAt!=='' ? x.req.createdAt : x.req.ts);
+}
+function hbIsNew(x){
+  const ev=x.it.verlauf||[]; const last=ev[ev.length-1];
+  if(last && last.von==='haendler') return false;   // eigene Schritte sind nie „neu"
+  const st=hbItemStamp(x); if(!st) return false;
+  const seen=seenGet(hbItemKey(x));
+  return !seen || String(seen)<st;
+}
+const HB_NEW_BADGE='<span class="hb-new">Neu</span>';
+function hbMarkSeen(x){ const st=hbItemStamp(x); if(st) seenSet(hbItemKey(x),st); }
+
 function hbGroups(){
   const g={};
-  const add=(key,name,meta,dir,req,brand)=>{ const e=g[key]||(g[key]={key,name,meta,verified:false,reqs:[],action:0,wait:0,deal:0,items:0,brand:null});
+  const add=(key,name,meta,dir,req,brand)=>{ const e=g[key]||(g[key]={key,name,meta,verified:false,reqs:[],action:0,wait:0,deal:0,items:0,neu:0,brand:null});
     if(!e.name) e.name=name; if(!e.meta) e.meta=meta; if(!e.brand && brand) e.brand=brand; e.reqs.push({dir,req}); return e; };
   (incomingReqs||[]).forEach(r=>{ const b=r.b||{}; const e=add(String(b.marken_id||b.name||'marke'), b.name||'Marke', b.kurzbeschreibung||'', 'in', r, b.marken_id?b:null);
     if(b.verified||b.marken_id==='brudibrezel') e.verified=true; });
@@ -5446,7 +5998,8 @@ function hbGroups(){
   (myRequests||[]).forEach(r=>{ const b=_brands.find(x=>x.marken_id===r.markenId)||null;
     add(String(r.markenId||r.brandName||'marke'), r.brandName||'Marke', '', 'my', r, b); });
   Object.values(g).forEach(e=>{
-    e.reqs.forEach(({dir,req})=>{ (req.items||[]).forEach(it=>{ e.items++;
+    e.reqs.forEach(({dir,req})=>{ (req.items||[]).forEach((it,idx)=>{ e.items++;
+      if(hbIsNew({dir,req,it,idx})) e.neu++;
       if(it.item_status==='angenommen'){ e.deal++; return; }
       if(negItemFinal(it)) return;
       if(negItemCanAct(it,'haendler', dir==='in'?'marke':'haendler')) e.action++; else e.wait++;
@@ -5508,7 +6061,7 @@ function renderHB(){
     el.innerHTML=`<div class="hb-list">`+list.map(e=>`
       <div class="hb-row${e.action?' hot':''}" onclick="hbOpen('${escTxt(e.key)}')">
         <div class="hb-id"><div class="hb-av">${hbBrandLogo(e)}</div>
-          <div style="min-width:0"><div class="hb-nm">${escTxt(e.name)}${e.verified?' <i class="ph-fill ph-seal-check" title="Verifiziert" style="font-size:14px;color:#2563eb"></i>':''}${e.action?`<span class="hb-rowflag"><span class="hb-pulse"></span> Aktion nötig${e.action>1?' · '+e.action:''}</span>`:''}</div>
+          <div style="min-width:0"><div class="hb-nm">${escTxt(e.name)}${e.verified?' <i class="ph-fill ph-seal-check" title="Verifiziert" style="font-size:14px;color:#2563eb"></i>':''}${e.neu?`<span class="hb-new" title="${e.neu} Schritt${e.neu===1?'':'e'}, die du noch nicht gesehen hast">Neu${e.neu>1?' · '+e.neu:''}</span>`:''}${e.action?`<span class="hb-rowflag"><span class="hb-pulse"></span> Aktion nötig${e.action>1?' · '+e.action:''}</span>`:''}</div>
           <div class="hb-sub"${e.action?' style="color:#a35c05;font-weight:600"':''}>${e.action?escTxt(e.next):e.items+' Produkt'+(e.items===1?'':'e')+' im Gespräch'}</div></div></div>
         ${counts(e)}
         <div style="display:flex;gap:8px;align-items:center">
@@ -5524,7 +6077,7 @@ function renderHB(){
         ${e.action?`<span class="hb-ribbon"><span class="hb-pulse"></span> Aktion nötig${e.action>1?' · '+e.action:''}</span>`:''}
         <div class="hb-card-top">${hbBrandLogo(e,'lg')}</div>
         <div class="hb-card-b">
-          <div class="hb-nm">${escTxt(e.name)}${e.verified?' <i class="ph-fill ph-seal-check" title="Verifiziert" style="font-size:14px;color:#2563eb"></i>':''}</div>
+          <div class="hb-nm">${escTxt(e.name)}${e.verified?' <i class="ph-fill ph-seal-check" title="Verifiziert" style="font-size:14px;color:#2563eb"></i>':''}${e.neu?`<span class="hb-new" title="${e.neu} Schritt${e.neu===1?'':'e'}, die du noch nicht gesehen hast">Neu${e.neu>1?' · '+e.neu:''}</span>`:''}</div>
           <div class="hb-sub">${e.items} Produkt${e.items===1?'':'e'} im Gespräch</div>
           ${counts(e)}${hbThumbs(e)}
           <div class="hb-next" style="${e.action?'':(e.deal?'color:#0f7a44':'color:#4b5058')}"><i class="ph ${e.action?'ph-arrow-bend-down-right':(e.deal?'ph-check-circle':'ph-hourglass-medium')}" style="${e.action?'color:#e5820e;':''}margin-top:2px;flex:0 0 auto"></i> ${escTxt(e.next)}</div>
@@ -5583,22 +6136,29 @@ function hbItemRowHtml(x,last){
   const menge = it.menge!=null?escTxt(String(it.menge))+' Stück':'<span style="color:#9aa0a8">noch offen — du legst sie fest</span>';
   let acts='';
   if(kind==='action'){
+    // Punkt 14 (HP 31.07.): Ablehnen lief hier direkt in hItemDecide OHNE Grund —
+    // deshalb stand `request_items.ablehnung_grund_intern` laden-seitig immer leer,
+    // während marken-seitig schon Gründe drin waren. Jetzt über askReject wie überall.
     acts = dir==='in'
       ? `<button class="hb-b hb-b-yes" onclick="event.stopPropagation();hItemDecide('${rid}',${idx},'angenommen')">Annehmen</button>
          <button class="hb-b" onclick="event.stopPropagation();hbCounterOpen('${x.id}')">Gegenvorschlag</button>
-         <button class="hb-b hb-b-ghost" onclick="event.stopPropagation();hItemDecide('${rid}',${idx},'abgelehnt')">Ablehnen</button>`
-      : `<button class="hb-b" onclick="event.stopPropagation();hbCounterOpen('${x.id}')">Anfrage anpassen</button>`;
+         <button class="hb-b hb-b-ghost" onclick="event.stopPropagation();askReject('in','${rid}',${idx})">Ablehnen</button>`
+      : `<button class="hb-b" onclick="event.stopPropagation();hbCounterOpen('${x.id}')">Anfrage anpassen</button>
+         <button class="hb-b hb-b-ghost" onclick="event.stopPropagation();askReject('out','${rid}',${idx},'zurueckziehen')">Zurückziehen</button>`;
   } else if(kind==='wait'){
     // Solange die Konditionen nicht stehen, darf der Laden seine Anfrage jederzeit ändern oder zurückziehen.
-    acts = `<button class="hb-b" onclick="event.stopPropagation();hbCounterOpen('${x.id}')">${dir==='in'?'Gegenvorschlag bearbeiten':'Anfrage bearbeiten'}</button>`;
+    acts = `<button class="hb-b" onclick="event.stopPropagation();hbCounterOpen('${x.id}')">${dir==='in'?'Gegenvorschlag bearbeiten':'Anfrage bearbeiten'}</button>
+       <button class="hb-b hb-b-ghost" onclick="event.stopPropagation();askReject('${dir==='in'?'in':'out'}','${rid}',${idx},'zurueckziehen')">Zurückziehen</button>`;
   }
-  const provLbl = dir==='in' ? 'Provision der Marke' : 'Deine Provision';
+  // Aus Laden-Sicht kommt die Provision herein — in beide Richtungen dieselbe Zahl,
+  // deshalb ein Label. Gegenstück zu „Provision für den Laden" auf der Marken-Seite (HP 31.07.).
+  const provLbl = 'Provision für dich';
   const src = dir==='in' ? 'Angebot der Marke' : 'Deine Anfrage';
   return `<div class="hb-prow${hbSelItem===x.id?' on':''}" style="border-left:3px solid ${HB_STRIPE[kind]};${last?'':'border-bottom:1px solid #eef0f2'}" onclick="hbSelect('${x.id}')">
     <div class="hb-pth">${img?`<img src="${escTxt(img)}" alt="" loading="lazy">`:'<i class="ph ph-package" style="color:#c2c7ce"></i>'}</div>
     <div style="min-width:0;flex:1">
       <div style="display:flex;align-items:flex-start;gap:10px">
-        <b class="hb-pnm" title="${escTxt(nm)}">${escTxt(nm)}</b>
+        <b class="hb-pnm" title="${escTxt(nm)}">${escTxt(nm)}</b>${hbIsNew(x)?HB_NEW_BADGE:''}
         <span style="margin-left:auto;flex:0 0 auto">${hbItemBadge(kind)}</span>
       </div>
       <div style="font-size:12px;color:var(--muted);margin-top:2px">${uvp!=null?escTxt(uvp.toFixed(2).replace('.',','))+' € UVP · ':''}${src}</div>
@@ -5612,11 +6172,43 @@ function hbItemRowHtml(x,last){
 }
 /* Klick auf eine Produktzeile wählt sie für das Panel rechts; nochmal derselbe Klick
    hebt die Auswahl auf. Beim Wechsel werden ältere Schritte wieder eingeklappt. */
-function hbSelect(id){ hbSelItem=(String(hbSelItem)===String(id))?null:id; hbThreadOld=false;
-  if(hbOpenKey) hbOpen(hbOpenKey,true); }
+function hbSelect(id){
+  hbSelItem=(String(hbSelItem)===String(id))?null:id; hbThreadOld=false;
+  // Wer die Zeile öffnet, hat sie gesehen — dann fällt das „Neu" weg (Punkt 11).
+  if(hbSelItem && hbOpenKey){
+    const e=hbGroups().find(g=>String(g.key)===String(hbOpenKey));
+    const x=e && hbItems(e).find(i=>i.id===hbSelItem);
+    if(x) hbMarkSeen(x);
+  }
+  if(hbOpenKey) hbOpen(hbOpenKey,true);
+}
 let hbThreadOld=false;           /* ältere Verlaufsschritte ausgeklappt? */
 const HB_EV_VIS=3;               /* so viele jüngste Schritte stehen immer offen */
 function hbThreadToggleOld(v){ hbThreadOld=!!v; if(hbOpenKey) hbOpen(hbOpenKey,true); }
+/* Die Nachricht, die beim Absenden der Anfrage bzw. des Angebots mitgeschickt wurde.
+   Sie wird gespeichert (`requests.nachricht` / `brand_requests.nachricht`), war bisher
+   aber nirgends zu sehen. Je nach Richtung liegt sie unter `nachricht` oder `msg`.
+   Spiegelbild zu `hbReqMsg` in `marke/markenpool-marke.html` — beide Seiten gleich halten. */
+function hbReqMsg(req){ return (req && (req.nachricht||req.msg) || '').trim(); }
+/* Erster, ältester Eintrag im Verlauf: gilt für die GANZE Anfrage, nicht für ein
+   einzelnes Produkt — deshalb der eigene Rahmen und die abweichende Beschriftung. */
+function hbIntroRowHtml(x){
+  const msg=hbReqMsg(x.req); if(!msg) return '';
+  const mine = x.dir==='my';
+  const titel = mine ? 'Deine Nachricht zur Anfrage' : 'Nachricht der Marke zum Angebot';
+  const datum = x.req.date || (x.req.createdAt?new Date(x.req.createdAt).toLocaleDateString('de-DE'):'');
+  return `<div style="display:grid;grid-template-columns:22px 1fr;gap:11px">
+    <div style="display:flex;flex-direction:column;align-items:center">
+      <span style="width:22px;height:22px;border-radius:50%;background:#eef0f2;display:grid;place-items:center;flex:0 0 auto"><i class="ph ph-envelope-simple" style="font-size:12px;color:#7b828c"></i></span>
+      <span style="flex:1;width:1px;background:#dfe3e8"></span>
+    </div>
+    <div style="padding-bottom:14px">
+      <div style="font-size:12.5px;font-weight:700">${escTxt(titel)}</div>
+      <div style="font-size:11.5px;color:var(--muted);margin-bottom:6px">${escTxt(datum)}${datum?' · ':''}gilt für alle Produkte dieser Anfrage</div>
+      <div style="background:#f6f7f9;border:1px solid #e6e8ec;border-radius:10px;padding:9px 11px;font-size:12.5px;line-height:1.5;white-space:pre-wrap">${escTxt(msg)}</div>
+    </div>
+  </div>`;
+}
 function hbThreadHtml(items){
   const x = items.find(i=>i.id===hbSelItem);
   if(!x) return `<div class="hb-thread"><div class="hb-thread-hint">
@@ -5624,9 +6216,12 @@ function hbThreadHtml(items){
       <div>Produkt links auswählen — der Verhandlungsverlauf steht dann hier.</div></div></div>`;
   const nm = hbPName(x.it);
   const ev=(x.it.verlauf||[]);
-  const showAll = hbThreadOld || ev.length<=HB_EV_VIS+1;
+  // Die Anfrage-Nachricht zählt als ältester Schritt und klappt mit den anderen ein.
+  const intro = hbIntroRowHtml(x);
+  const introN = intro ? 1 : 0;
+  const showAll = hbThreadOld || (ev.length+introN)<=HB_EV_VIS+1;
   const vis = showAll ? ev : ev.slice(-HB_EV_VIS);
-  const hidden = ev.length - vis.length;
+  const hidden = (ev.length - vis.length) + (showAll?0:introN);
   const rows = vis.length ? vis.map((e,i)=>{
     const last = i===vis.length-1;
     const mine = e.von==='haendler';
@@ -5643,7 +6238,7 @@ function hbThreadHtml(items){
   }).join('') : '<div style="font-size:12.5px;color:var(--muted)">Noch keine Vorschläge — das Erstangebot steht in der Zeile links.</div>';
   const older = hidden>0
     ? `<button class="hb-older" onclick="hbThreadToggleOld(true)"><i class="ph ph-caret-down"></i> + ${hidden} ältere Schritte anzeigen</button>` : '';
-  const fold = (showAll && ev.length>HB_EV_VIS+1)
+  const fold = (showAll && (ev.length+introN)>HB_EV_VIS+1)
     ? `<button class="hb-older up" onclick="hbThreadToggleOld(false)"><i class="ph ph-caret-up"></i> ältere wieder einklappen</button>` : '';
   return `<div class="hb-thread">
     <div class="hb-thread-h">
@@ -5654,7 +6249,7 @@ function hbThreadHtml(items){
       <button class="btn" style="flex:0 0 auto;padding:7px 11px;font-size:12.5px;white-space:nowrap" onclick="hbOpenProdChat()"><i class="ph ph-chat-circle"></i> Chat zum Produkt</button>
       <button class="hb-ico" title="Auswahl aufheben" onclick="hbSelect('${escTxt(String(x.id))}')"><i class="ph ph-x" style="font-size:15px"></i></button>
     </div>
-    <div class="hb-thread-b">${older}${rows}${fold}</div>
+    <div class="hb-thread-b">${older}${showAll?intro:''}${rows}${fold}</div>
     <div class="hb-thread-f">
       <input id="hbMsg" placeholder="Nachricht zu diesem Produkt …" onkeydown="if(event.key==='Enter'){event.preventDefault();hbSendMsg();}" style="flex:1;border:1px solid var(--border);border-radius:10px;padding:9px 12px;font-size:13px;outline:none">
       <button class="btn btn-primary" style="padding:0 14px" onclick="hbSendMsg()"><i class="ph ph-paper-plane-right"></i></button>
@@ -5715,9 +6310,10 @@ function hbOpen(key,keepScroll){
     </div>
     <div class="hb-split">
       <div class="mrq-item" style="padding:0;overflow:hidden;margin-bottom:0">
-        <div style="padding:13px 16px;border-bottom:1px solid #eef0f2;display:flex;align-items:center;gap:10px">
+        <div style="padding:13px 16px;border-bottom:1px solid #eef0f2;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
           <b style="font-size:14px">${items.length} Produkt${items.length===1?'':'e'} im Gespräch</b>
-          ${openCnt?`<span style="margin-left:auto;font-size:12px;color:var(--muted)">${openCnt} wartet auf dich</span>`:''}
+          ${openCnt?`<span style="font-size:12px;color:var(--muted)">${openCnt} wartet auf dich</span>`:''}
+          ${hbBulkBarHtml(items)}
         </div>
         ${rows||'<div class="state-msg">Noch keine Produkte.</div>'}
       </div>
@@ -5725,10 +6321,80 @@ function hbOpen(key,keepScroll){
     </div>`;
   if(!keepScroll) window.scrollTo({top:0,behavior:'smooth'});
 }
+/* ============================================================================
+   Sammelaktion je Partner (HP 31.07., Punkt 13)
+   `bulkH`/`bulkO` arbeiten je Anfrage. In der Handelsbeziehung können mehrere
+   Anfragen derselben Marke nebeneinanderliegen — hier wird deshalb über ALLE
+   offenen Produkte dieser Marke hinweg entschieden. Beim Ablehnen wird der
+   interne Grund einmal erfasst und für alle übernommen.
+   ⚠️ Spiegelbildlich in `marke/markenpool-marke.html`.
+   ============================================================================ */
+function hbActionable(items){ return (items||[]).filter(x=>x.kind==='action'); }
+function hbBulkBarHtml(items){
+  const n=hbActionable(items).filter(x=>x.dir==='in').length;   // nur eingehende Angebote sind entscheidbar
+  if(n<2) return '';           // bei einem Produkt sind die Zeilen-Knöpfe schneller
+  return `<span style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
+    <button class="hb-b hb-b-yes" onclick="hbBulkAccept()"><i class="ph ph-checks"></i> Alle ${n} annehmen</button>
+    <button class="hb-b" onclick="askReject('','','allPartner')"><i class="ph ph-x"></i> Alle ablehnen</button>
+  </span>`;
+}
+function hbBulkAccept(){ hbBulkPartner('angenommen',''); }
+async function hbBulkPartner(status,reason){
+  const e=hbGroups().find(x=>String(x.key)===String(hbOpenKey)); if(!e) return;
+  const list=hbActionable(hbItems(e)).filter(x=>x.dir==='in');
+  if(!list.length){ if(typeof toast==='function') toast('Nichts offen'); return; }
+  for(const x of list){
+    // Einzeln abwarten: jede Entscheidung schreibt und synchronisiert ihre
+    // Anfrage-Aggregation, parallel würden sich die Updates überholen.
+    await hItemDecide(x.req.brId, x.idx, status, reason, true);
+  }
+  renderIncoming(); if(typeof refreshHReqBadge==='function') refreshHReqBadge();
+  hbRefresh();
+  if(typeof toast==='function') toast(status==='angenommen'
+    ? list.length+' Produkt'+(list.length===1?'':'e')+' angenommen'
+    : list.length+' Produkt'+(list.length===1?'':'e')+' abgelehnt');
+}
 function hbOpenBrand(key){ const g=hbGroups().find(x=>String(x.key)===String(key)); if(!g) return;
   hShowPane('brandpool');
   if(typeof openBrand==='function') setTimeout(()=>openBrand(String(key)),250); }
 function hbOpenChat(key){ if(typeof cvOpen==='function') cvOpen(key); }   /* Marken-Chat, ungefiltert */
+/* ============================================================================
+   Zahlenfeld mit Schrittknöpfen (HP 31.07., Punkt 5) — CSS-Block `.nstep` oben.
+   Ein Bauplan für alle Stellen, damit Provision und Erstliefermenge überall
+   gleich aussehen und sich gleich verhalten.
+   ⚠️ Identisch in `marke/markenpool-marke.html` — beide Seiten gleich halten.
+   ============================================================================ */
+function nstepHtml(o){
+  const st = o.step!=null ? o.step : 1;
+  const at = [
+    o.min!=null?`min="${o.min}"`:'',
+    o.max!=null?`max="${o.max}"`:'',
+    `step="${st}"`,
+    o.placeholder?`placeholder="${escTxt(o.placeholder)}"`:'',
+    o.oninput?`oninput="${o.oninput}"`:'',
+    o.onchange?`onchange="${o.onchange}"`:'',
+    o.title?`title="${escTxt(o.title)}"`:''
+  ].filter(Boolean).join(' ');
+  return `<span class="nstep${o.sm?' sm':''}">`
+    +`<button type="button" class="nstep-b" aria-label="weniger" onclick="nstep('${o.id}',${-st})">−</button>`
+    +`<span class="nstep-v"><input class="nstep-in" id="${o.id}" type="number" value="${o.value!=null?escTxt(String(o.value)):''}" ${at}>`
+    +(o.unit?`<span class="nstep-u">${escTxt(o.unit)}</span>`:'')+`</span>`
+    +`<button type="button" class="nstep-b" aria-label="mehr" onclick="nstep('${o.id}',${st})">+</button>`
+    +`</span>`;
+}
+/* Knopf-Klick: rechnet, hält min/max ein und löst input+change aus, damit
+   vorhandene Handler genauso greifen wie beim Tippen. */
+function nstep(id,d){
+  const el=document.getElementById(id); if(!el) return;
+  const min = el.min!=='' ? parseFloat(el.min) : -Infinity;
+  const max = el.max!=='' ? parseFloat(el.max) :  Infinity;
+  let v=(parseFloat(el.value)||0)+d;
+  if(v<min) v=min; if(v>max) v=max;
+  el.value=v;
+  el.dispatchEvent(new Event('input',{bubbles:true}));
+  el.dispatchEvent(new Event('change',{bubbles:true}));
+}
+
 /* ---- Gegenvorschlag-Popup: Erstliefermenge ist beim Laden PFLICHT ---- */
 let _hbCtr=null;
 function hbCounterOpen(id){
@@ -5738,13 +6404,19 @@ function hbCounterOpen(id){
   const nm = hbPName(x.it);
   document.getElementById('hbCtrProd').textContent=nm;
   document.getElementById('hbCtrMeta').textContent=(x.dir==='in'?'Marke bietet ':'Deine Anfrage: ')+(x.it.provision!=null?x.it.provision+' %':'—')+(x.it.menge?' · '+x.it.menge+' Stück':'');
-  document.getElementById('hbCtrVal').value=x.it.provision!=null?x.it.provision:'';
-  document.getElementById('hbCtrMng').value=x.it.menge!=null?x.it.menge:'';
+  // Felder werden bei jedem Öffnen neu gebaut (eine Stepper-Komponente, siehe nstepHtml)
+  document.getElementById('hbCtrProvBox').innerHTML=nstepHtml({
+    id:'hbCtrVal', unit:'%', min:0, max:100, step:1,
+    value:(x.it.provision!=null?x.it.provision:'')});
+  document.getElementById('hbCtrMngBox').innerHTML=nstepHtml({
+    id:'hbCtrMng', unit:'Stück', min:1, step:5, placeholder:'z. B. 60',
+    value:(x.it.menge!=null?x.it.menge:'')});
   document.getElementById('hbCtrMsg').value='';
   document.getElementById('hbCtrModal').classList.add('open');
   const ov=document.getElementById('overlay'); if(ov) ov.classList.add('open');
 }
-function hbCtrStep(d){ const i=document.getElementById('hbCtrVal'); const v=Math.max(0,Math.min(100,(parseFloat(i.value)||0)+d)); i.value=v; }
+/* Alt-Aufruf: die Schrittlogik liegt jetzt in nstep(), min/max stehen am Feld. */
+function hbCtrStep(d){ nstep('hbCtrVal',d); }
 function hbCounterClose(){ document.getElementById('hbCtrModal').classList.remove('open');
   const ov=document.getElementById('overlay'); if(ov) ov.classList.remove('open'); _hbCtr=null; }
 async function hbCounterSend(){
@@ -6118,7 +6790,7 @@ renderBrands = function(){ _origRenderBrands.apply(this, arguments); decorateGri
 
 /* ===== Globaler Scroll-Lock: Hintergrund friert ein, sobald ein Fenster offen ist ===== */
 (function(){
-  const SEL='.popup.open,.modal.open,.drawer.open,.overlay.open,.mini.open,.poolmodal.open,.filtersheet.open';
+  const SEL='.popup.open,.modal.open,.drawer.open,.overlay.open,.mini.open,.poolmodal.open,.filtersheet.open,.lp-crop.open';
   let raf=null;
   const apply=()=>{ raf=null; document.body.style.overflow = document.querySelector(SEL) ? 'hidden' : ''; };
   const queue=()=>{ if(!raf) raf=requestAnimationFrame(apply); };
