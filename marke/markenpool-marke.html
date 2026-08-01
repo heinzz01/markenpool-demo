@@ -1913,7 +1913,75 @@ function switchTab(id,el){
   }
   if(id==='chat'){ renderChatList().then(updateChatBadge); }
   if(id==='rechner'){ prRender(); }
+  if(!_routeAktiv) routeSchreiben(id);   // Adresse mitführen (siehe Routing-Block unten)
 }
+
+/* ============================================================================
+   ADRESSEN DER TABS (HP 01.08.2026)
+   Erster Schritt zur Zielarchitektur „jede Ansicht bekommt eine eigene Unterseite"
+   (_KOORDINATION.md, Abschnitt Zielarchitektur). Ab jetzt hat jeder Tab eine
+   teilbare Adresse, der Zurück-Knopf funktioniert und ein Neuladen bleibt auf
+   demselben Tab.
+
+   WARUM `#` UND NICHT `?`
+   Der Query-String ist hier schon belegt (`?admin_as=`, `?standalone`, `?demo=`,
+   auf der Laden-Seite zusätzlich `?marke=&produkt=` für Produkt-Deeplinks). Die
+   Laden-Seite ersetzt beim Schließen einer Marke die ganze Adresse durch
+   `location.pathname` — ein `?tab=` wäre dabei still verschwunden. Der Hash
+   übersteht das.
+
+   WARUM NOCH KEINE ECHTEN UNTERSEITEN
+   GitHub Pages liefert nur statische Dateien: `/marke/handelsbeziehungen` gäbe
+   beim Neuladen einen 404, solange die Datei nicht existiert. Echte Unterseiten
+   heißen: diese Datei aufteilen und Kopf, Sitzung, Supabase-Client und die
+   Anfrage-Bausteine in gemeinsame Module ziehen. Eigenes Vorhaben.
+
+   BEIM UMSTIEG
+   `ROUTES` bleibt die Wahrheit. Aus `#handelsbeziehungen` wird
+   `/marke/handelsbeziehungen`, und eine kurze Weiterleitung fängt alte
+   Hash-Links ab. Deshalb hier schon sprechende Adressen statt `#hb`.
+   ============================================================================ */
+const ROUTES={
+  'markenprofil':      'profil',
+  'laeden-entdecken':  'karte',
+  'empfehlungen':      'matching',
+  'handelsbeziehungen':'hb',
+  'chat':              'chat',
+  'provisionsrechner': 'rechner',
+  'faq':               'faq'
+};
+const ROUTE_SLUG={}; Object.keys(ROUTES).forEach(s=>{ ROUTE_SLUG[ROUTES[s]]=s; });
+const ROUTE_START=ROUTES[Object.keys(ROUTES)[0]];   // Ansicht ohne Adresse = Markenprofil
+let _routeAktiv=false;   // läuft gerade ein Adresswechsel? Verhindert Lesen↔Schreiben-Schleifen
+
+/* Tab-ID aus der Adresse. Trifft absichtlich nichts bei `#at=…`/`#rt=…` —
+   das sind die Anmelde-Token der Admin-Übernahme, keine Ansicht. */
+function routeVonHash(){
+  let h='';
+  try{ h=decodeURIComponent((location.hash||'').replace(/^#/,'')); }catch(e){ h=(location.hash||'').replace(/^#/,''); }
+  return ROUTES[h.trim().toLowerCase()]||null;
+}
+function routeSchreiben(id,ersetzen){
+  const slug=ROUTE_SLUG[id]; if(!slug) return;
+  const ziel=location.pathname+location.search+'#'+slug;
+  if(location.pathname+location.search+location.hash===ziel) return;   // schon dort, kein zweiter Eintrag
+  try{ ersetzen ? history.replaceState(null,'',ziel) : history.pushState(null,'',ziel); }catch(e){}
+}
+/* Adresse → Ansicht. `ersetzen` beim ersten Aufruf, damit das Laden keinen
+   zusätzlichen Verlaufseintrag erzeugt; bei Zurück/Vorwärts NICHT, da hat der
+   Browser die Adresse schon gesetzt. */
+function routeAnwenden(ersetzen){
+  const id = routeVonHash() || (location.hash ? null : ROUTE_START);
+  if(!id) return false;
+  const el=document.querySelector('.tab[data-tab="'+id+'"]'); if(!el) return false;
+  _routeAktiv=true;
+  try{ el.style.display=''; switchTab(id,el); if(ersetzen) routeSchreiben(id,true); }
+  finally{ _routeAktiv=false; }
+  return true;
+}
+window.addEventListener('popstate', ()=>routeAnwenden(false));
+window.addEventListener('hashchange', ()=>routeAnwenden(false));   // von Hand geänderte Adresse
+
 /* Rückwärtskompatibel: alte Öffner zeigen jetzt den zusammengeführten Tab */
 let hbPendingKey=null;   // Deep-Jump-Ziel: wird erst geöffnet, wenn die Daten geladen sind
 function openHB(storeKey){ const t=document.querySelector('[data-tab="hb"]'); if(!t) return; hbPendingKey=storeKey||null; switchTab('hb',t); }
@@ -4939,10 +5007,19 @@ document.addEventListener('keydown',e=>{
   const b=document.getElementById('roleSwitch'); if(!b||b.style.display==='none') return;
   e.preventDefault(); goHaendlerView();
 });
-/* Beim Laden: mitgebrachten Ziel-Tab öffnen */
-(function(){ let t=null; try{ t=localStorage.getItem('spreat_jump_tab'); localStorage.removeItem('spreat_jump_tab'); }catch(e){}
-  if(!t) return; const el=document.querySelector('.tab[data-tab="'+t+'"]');
-  if(el) setTimeout(()=>{ el.style.display=''; switchTab(t,el); }, 60);
+/* Beim Laden den richtigen Tab herstellen.
+   Reihenfolge: die ADRESSE gewinnt — wer einen Link auf einen Tab öffnet, landet dort.
+   Nur ohne Adresse greift der vom Rollen-Umschalter mitgegebene Ziel-Tab. */
+(function(){
+  let t=null; try{ t=localStorage.getItem('spreat_jump_tab'); localStorage.removeItem('spreat_jump_tab'); }catch(e){}
+  setTimeout(()=>{
+    if(routeVonHash()){ routeAnwenden(true); return; }
+    if(!t) return;
+    const el=document.querySelector('.tab[data-tab="'+t+'"]'); if(!el) return;
+    _routeAktiv=true;
+    try{ el.style.display=''; switchTab(t,el); routeSchreiben(t,true); }   // ersetzen: kein Extra-Eintrag
+    finally{ _routeAktiv=false; }
+  }, 60);
 })();
 function refreshRoleSwitch(email){
   const b=document.getElementById('roleSwitch'); if(!b) return;

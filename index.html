@@ -6831,6 +6831,86 @@ function decorateGridForGuest(){
 const _origRenderBrands = renderBrands;
 renderBrands = function(){ _origRenderBrands.apply(this, arguments); decorateGridForGuest(); };
 
+/* ============================================================================
+   ADRESSEN DER TABS (HP 01.08.2026) — Gegenstück zum Routing-Block in
+   `marke/markenpool-marke.html`. Dort steht auch die ausführliche Begründung,
+   warum `#` und nicht `?` und warum noch keine echten Unterseiten.
+
+   BESONDERHEIT DIESER SEITE — bewusst als ÜBERBAU gebaut:
+   `hShowPane()` und `hNav()` gehören Session L. Statt in die Funktionsrümpfe zu
+   schreiben, wird `hShowPane` hier umhüllt (dasselbe Muster, das die Datei schon
+   bei `renderAuth` und `renderBrands` benutzt). Damit gibt es keine Überlappung
+   mit L, und ein Rollback ist das Löschen dieses einen Blocks.
+
+   ZUSAMMENSPIEL MIT DEN PRODUKT-DEEPLINKS
+   Der Brandpool führt seine eigene Adresse (`?marke=&produkt=`, `syncUrl()`),
+   und beim Schließen einer Marke setzt `closeAll()` die Adresse auf
+   `location.pathname` zurück — dabei fällt auch der Hash weg. Das ist hier
+   unschädlich, weil das nur im Brandpool passiert und der Brandpool ohnehin die
+   Startansicht ist. Wer danach einen anderen Tab wählt, bekommt seine Adresse
+   sofort wieder. Beim Umstieg auf echte Unterseiten löst sich das von selbst.
+   ============================================================================ */
+const ROUTES={
+  'ladenprofil':       'profil',
+  'brandpool':         'brandpool',
+  'handelsbeziehungen':'hb',
+  'chat':              'chat',
+  'faq':               'faq'
+};
+const ROUTE_SLUG={}; Object.keys(ROUTES).forEach(s=>{ ROUTE_SLUG[ROUTES[s]]=s; });
+const ROUTE_START='brandpool';   // Ansicht ohne Adresse
+let _routeAktiv=false;
+/* Beide Alt-Namen zeigen auf denselben Tab — `hShowPane` normalisiert intern genauso. */
+function routeNorm(name){ return (name==='incoming'||name==='outgoing') ? 'hb' : name; }
+function routeVonHash(){
+  let h='';
+  try{ h=decodeURIComponent((location.hash||'').replace(/^#/,'')); }catch(e){ h=(location.hash||'').replace(/^#/,''); }
+  return ROUTES[h.trim().toLowerCase()]||null;   // `#at=…` (Anmelde-Token) trifft nichts
+}
+function routeSchreiben(id,ersetzen){
+  const slug=ROUTE_SLUG[routeNorm(id)]; if(!slug) return;
+  const ziel=location.pathname+location.search+'#'+slug;
+  if(location.pathname+location.search+location.hash===ziel) return;
+  try{ ersetzen ? history.replaceState(null,'',ziel) : history.pushState(null,'',ziel); }catch(e){}
+}
+/* Adresse → Ansicht. Läuft über `hNav()`, nicht über `hShowPane()`, damit die
+   Anmelde-Sperre greift: wer abgemeldet `#handelsbeziehungen` öffnet, bekommt
+   das Anmeldefenster statt einer leeren Ansicht. */
+/* Solange die Rollen-Auswahl (Prepage) sichtbar ist, darf hier nichts umgeschaltet
+   werden — sonst schiebt sich die Brandpool-Ansicht dahinter oder darüber. */
+function routeBereit(){
+  const pp=document.getElementById('prepage');
+  return !pp || pp.classList.contains('hidden');
+}
+function routeAnwenden(ersetzen, mitStart){
+  if(!routeBereit()) return false;
+  const id = routeVonHash() || (mitStart && !location.hash ? ROUTE_START : null);
+  if(!id || typeof hNav!=='function') return false;
+  _routeAktiv=true;
+  try{ hNav(id); if(ersetzen) routeSchreiben(id,true); }
+  finally{ _routeAktiv=false; }
+  return true;
+}
+(function(){
+  const _origHShowPane = hShowPane;
+  hShowPane = function(name){
+    _origHShowPane.apply(this, arguments);
+    if(!_routeAktiv) routeSchreiben(name);
+  };
+})();
+window.addEventListener('popstate',  ()=>routeAnwenden(false,true));
+window.addEventListener('hashchange',()=>routeAnwenden(false,true));
+/* Beim Laden NUR bei ausdrücklicher Adresse — ohne Hash bleibt alles, wie es ist
+   (Brandpool ist ohnehin die Startansicht). Und nie bei einem Produkt-Deeplink:
+   dort gewinnt `?marke=`, `applyUrlState()` in `init()` stellt die Markenansicht
+   her, und ein gleichzeitiges `hNav('brandpool')` würde sie über `closeAll()`
+   sofort wieder zuschlagen. */
+setTimeout(()=>{
+  if(new URLSearchParams(location.search).get('marke')) return;
+  if(!routeVonHash()) return;
+  routeAnwenden(true,false);
+}, 80);
+
 /* ===== Globaler Scroll-Lock: Hintergrund friert ein, sobald ein Fenster offen ist ===== */
 (function(){
   const SEL='.popup.open,.modal.open,.drawer.open,.overlay.open,.mini.open,.poolmodal.open,.filtersheet.open,.lp-crop.open';
