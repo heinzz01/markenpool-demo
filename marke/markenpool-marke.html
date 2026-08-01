@@ -1879,15 +1879,20 @@ function switchTab(id,el){
     myReqSeen=true;
     document.getElementById('hbList').innerHTML='<div class="rcard-empty" style="padding:30px">Lädt …</div>';
     hbBack();
-    // ensureMapData() MUSS vor loadMyReqAll() durch sein: loadMyBrandReq() schlägt den
-    // Ladennamen über allLocs() nach, und allLocs() ist leer, solange die Kartendaten
-    // nicht geladen sind. Wer direkt auf die Handelsbeziehungen geht (Deep-Link,
-    // Reload auf dem Tab), sah sonst überall nur „Laden" ohne Stadt. Die Empfehlungen
-    // warten aus demselben Grund schon auf ensureMapData().
-    ensureMapData().catch(()=>{})   // Karte kaputt darf die Handelsbeziehungen nicht blockieren
+    // Reihenfolge ist hier alles — zwei Dinge müssen VOR dem Laden der Anfragen stehen:
+    //  1. ensureBrandData(): ohne den Produktkatalog wirft loadInReq() jede Anfrage weg,
+    //     weil sie keine auflösbaren Positionen hat → „Noch keine Handelsbeziehungen".
+    //  2. ensureMapData(): loadMyBrandReq() schlägt den Ladennamen über allLocs() nach,
+    //     sonst heißt jede Beziehung nur „Laden" ohne Stadt.
+    // Beide sind Versprechen und dürfen NICHT parallel zu den Ladefunktionen laufen.
+    ensureBrandData()
+      .then(()=>ensureMapData().catch(()=>{}))   // kaputte Karte darf die Beziehungen nicht blockieren
       .then(()=>Promise.all([seenInit(), loadInReq(), loadMyReqAll()]))
       .then(()=>{ renderInReq(); renderMyReq(); renderHB(); hbBadgeUpdate();
-        if(hbPendingKey){ const k=hbPendingKey; hbPendingKey=null; hbOpen(k); } });
+        if(hbPendingKey){ const k=hbPendingKey; hbPendingKey=null; hbOpen(k); } })
+      .catch(e=>{ console.error('Handelsbeziehungen',e);
+        const l=document.getElementById('hbList');
+        if(l) l.innerHTML='<div class="rcard-empty" style="padding:30px">Handelsbeziehungen konnten nicht geladen werden. Seite neu laden.</div>'; });
   }
   if(id==='chat'){ renderChatList().then(updateChatBadge); }
   if(id==='rechner'){ prRender(); }
@@ -2460,7 +2465,7 @@ function syncAll(){ renderProfile(); renderPoolPreview(); if(document.getElement
    Fallback-Beispieldaten mit DENSELBEN Feldern → später nur die Query tauschen.
    Freenet-Verbund kommt separat aus locations.json (FN_LOCS) und wird gemergt.
    KEINE Adresse/Mail/Telefon im Frontend. */
-let mapLocs=[], mapMock=false, mapLoaded=false;
+let mapLocs=[], mapMock=false, mapLoaded=false, _mapDataP=null;
 const DEMO_RID='7a1cb0da-66a4-443b-81ea-50a9007d37a7';
 const GREY=[['Fashion',50.11,8.68],['Concept Store',48.14,11.58],['Feinkost',53.55,9.99],['Beauty',51.23,6.78],['Geschenke',52.52,13.40],['Wohnen',50.94,6.96],['Feinkost',48.78,9.18],['Fashion',51.34,12.37],['Küche',53.08,8.81],['Geschenke',51.05,13.74],['Beauty',49.99,8.24],['Concept Store',49.45,11.08]];
 const MOCK_LOCS=[
@@ -2509,7 +2514,19 @@ async function loadMapLocations(){
   }
   mapLocs=MOCK_LOCS.map(m=>({...m, real:false})); mapMock=true;
 }
-async function ensureMapData(){ if(mapLoaded) return; mapLoaded=true; await loadMapLocations(); updateMockNote(); }
+/* Gemerktes VERSPRECHEN, keine Boolesche Sperre. Vorher setzte die Funktion `mapLoaded=true`
+   und startete danach erst den seitenweisen RPC über ~1140 Standorte. Ein zweiter Aufrufer
+   sah das gesetzte Flag, kehrte sofort zurück und arbeitete mit einem noch leeren `mapLocs`.
+   Genau das passierte beim Einloggen: `applyDbData()` stößt den Ladevorgang an, und wer
+   gleich danach auf „Meine Handelsbeziehungen" klickte, bekam keine Ladennamen.
+   Jetzt warten alle Aufrufer auf denselben Ladevorgang. */
+function ensureMapData(){
+  if(_mapDataP) return _mapDataP;
+  mapLoaded=true;
+  _mapDataP=(async()=>{ await loadMapLocations(); updateMockNote(); })()
+    .catch(e=>{ _mapDataP=null; mapLoaded=false; throw e; });   // Fehlschlag darf einen neuen Versuch erlauben
+  return _mapDataP;
+}
 function updateMockNote(){ const n=document.getElementById('karteMockNote'); if(!n) return;
   n.style.display = mapMock?'':'none';
   n.innerHTML='<i class="ph ph-flask"></i> Beispieldaten, bis <code>map_open_locations()</code> live ist (Session&nbsp;D). Freenet-Standorte sind echt (locations.json).'; }
@@ -3252,8 +3269,9 @@ let cvCache=null;      // alle Nachrichten (siehe Hinweis cvFetch)
 function cvEsc(s){ return (typeof esc==='function')?esc(s):String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 function cvOffline(){ return (typeof STANDALONE!=='undefined'&&STANDALONE)||typeof sbm==='undefined'||typeof dbBrand==='undefined'||!dbBrand; }
 async function cvEnsure(){
-  // Erst die Kartendaten: loadMyBrandReq() braucht allLocs() für den Ladennamen.
-  // Ohne das heißt jeder Chat-Partner „Laden" (gleicher Grund wie im Tab-Wechsel).
+  // Gleiche Reihenfolge wie im Tab-Wechsel: erst Marke+Produkte, dann Kartendaten.
+  // Ohne den Katalog fällt jede Anfrage weg, ohne allLocs() heißt jeder Partner „Laden".
+  try{ await ensureBrandData(); }catch(e){}
   try{ await ensureMapData(); }catch(e){}
   try{ if(!inReqs) await loadInReq(); }catch(e){}
   try{ if(!myRequests) await loadMyReqAll(); }catch(e){}
@@ -4636,6 +4654,14 @@ const ADMIN_AS=new URLSearchParams(location.search).get('admin_as');
 const ADMIN_IMP_MAILS=[];
 function canImpersonate(e){ return !!ADMIN_AS && ADMIN_IMP_MAILS.includes((e||'').trim().toLowerCase()); }
 let dbBrand=null;   // Original-DB-Zeile der eingeloggten Marke
+/* Der Anmeldevorgang als Versprechen. `bootBrand()` lief bisher nebenher los und niemand
+   konnte darauf warten — wer sofort auf „Meine Handelsbeziehungen" ging, rief `loadInReq()`
+   auf, während `products` noch leer war. `loadInReq()` behält aber nur Positionen, deren
+   Produkt es im Katalog findet, und wirft danach jede Anfrage ohne Positionen weg
+   (`.filter(r=>r.items.length)`) — Ergebnis: „Noch keine Handelsbeziehungen", obwohl welche
+   da sind. Beim zweiten Besuch war der Katalog geladen und alles war plötzlich da. */
+let _brandBootP=null;
+async function ensureBrandData(){ if(_brandBootP){ try{ await _brandBootP; }catch(e){} } }
 
 function mlShow(step){ ['mlStep1','mlStep2','mlNoBrand'].forEach(s=>document.getElementById(s).style.display = s===step?'':'none'); }
 function mlBack(){ mlShow('mlStep1'); }
@@ -4760,7 +4786,11 @@ function applyDbData(b, ps){
       +`<button class="who-lo" onclick="spreatLogout()"><i class="ph ph-sign-out"></i> Abmelden</button>`;
   }
   renderProfile(); renderPoolPreview(); renderRecs(); renderSeek(); renderKarteQuota();
-  mapLoaded=false; ensureMapData().then(()=>{ renderRecs(); renderSeek(); if(mapReady){ populateBranchFilter(); renderMap(); renderRetailerList(); } });   // echte Standorte via RPC nach Login
+  // Nach dem Login einmal frisch laden: Sperre UND gemerktes Versprechen zurücksetzen,
+  // sonst hinge der neue Aufruf am alten (leeren) Ergebnis von vor der Anmeldung.
+  mapLoaded=false; _mapDataP=null;
+  ensureMapData().then(()=>{ renderRecs(); renderSeek(); if(mapReady){ populateBranchFilter(); renderMap(); renderRetailerList(); } })
+    .catch(e=>console.warn('Standorte nicht geladen', e&&e.message));   // echte Standorte via RPC nach Login
   loadInReq().then(()=>{ inReqBadgeUpdate(); updateChatBadge(); });   // eingehende Laden-Anfragen + Badge + Chat-Badge
 }
 
@@ -4878,7 +4908,7 @@ function refreshRoleSwitch(email){
   b.style.display = /@spreat\.com$/i.test(email||'') ? 'inline-flex' : 'none';
 }
 /* ---- Start: echte Session prüfen (außer ?standalone / Demo-Flag) ---- */
-if(!STANDALONE) bootBrand();
+if(!STANDALONE) _brandBootP=bootBrand();
 if(!STANDALONE && typeof sbm!=='undefined')
   sbm.auth.getUser().then(({data})=>refreshRoleSwitch(data && data.user && data.user.email));
 if(DEMO_VIEW){

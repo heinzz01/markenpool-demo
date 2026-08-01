@@ -5912,6 +5912,18 @@ function accDecide(id,status){
   r.status=status; renderIncoming();
 }
 /* Inline-Panes statt Popup: „Anfragen von Marken" (eingehend) & „Meine Sortiments-Anfragen" (ausgehend). */
+/* Wartet, bis `init()` den Produktkatalog geladen hat. `productsLoaded` wird in
+   `dataProvider.loadProducts()` gesetzt und ist das vorhandene Bereitschafts-Signal.
+   Die Wartelese statt eines Versprechens, weil `init()` in der Region von Session L liegt
+   und dort nicht als `const _initP = init();` festgehalten wird — Notiz dazu steht in
+   `_KOORDINATION.md` unter „Übergaben Session M". Sobald L das nachzieht, kann diese
+   Funktion durch `await _initP` ersetzt werden.
+   Die Obergrenze verhindert Hängenbleiben: schlägt das Laden fehl, geht es ohne Katalog
+   weiter und die Ansicht zeigt ihre normale Fehlermeldung. */
+async function ensureKatalog(maxMs){
+  const bis=Date.now()+(maxMs||10000);
+  while(!productsLoaded && Date.now()<bis) await new Promise(r=>setTimeout(r,120));
+}
 function hShowPane(name){
   if(name==='incoming'||name==='outgoing') name='hb';   // beide Anfragerichtungen leben jetzt in „Meine Handelsbeziehungen“
   ['profil','brandpool','hb','chat','faq'].forEach(p=>{ const el=document.getElementById('hpane-'+p); if(el) el.style.display=(p===name)?'':'none'; });
@@ -5924,11 +5936,17 @@ function hShowPane(name){
   if(name==='hb'){
     hbBack();
     const l=document.getElementById('hbList'); if(l) l.innerHTML='<div class="state-msg">Lädt …</div>';
-    Promise.all([
+    // Der Produktkatalog MUSS vorher stehen: loadRealIncoming() löst jede Position über
+    // findProduct() auf und wirft Anfragen ohne auflösbare Positionen weg. Klickt jemand
+    // auf „Meine Handelsbeziehungen", während init() noch die ~12.500 Produkte lädt,
+    // verschwinden dadurch ALLE Anfragen und es steht „Noch keine Handelsbeziehungen" da —
+    // beim zweiten Besuch sind sie plötzlich wieder da. Auf der Marken-Seite hatte HP
+    // genau das gemeldet (31.07.), hier ist es dieselbe Ursache.
+    ensureKatalog().then(()=>Promise.all([
       seenInit().catch(()=>{}),   // Lesestand fürs „Neu"-Badge (Punkt 11)
       (session.loggedIn?loadMyRequests():Promise.resolve()).catch(e=>{ console.error('loadMyRequests',e); }),
       loadIncoming().catch(e=>{ console.error('loadIncoming',e); })
-    ]).then(()=>{
+    ])).then(()=>{
       const safe=(fn,nm)=>{ try{ fn(); }catch(e){ console.error(nm,e); } };
       safe(renderRequestsOverview,'renderRequestsOverview');
       safe(renderIncoming,'renderIncoming');
