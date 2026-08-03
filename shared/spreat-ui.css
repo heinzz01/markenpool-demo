@@ -1,0 +1,198 @@
+/* ============================================================================
+   Spreat Markenpool — gemeinsame Gestaltung
+   Stand 2026-08-01 · eine Datei für Laden, Marke und Admin
+   ----------------------------------------------------------------------------
+   ANLASS
+   Paul im Feedback-Call: Badges, Abstände und Schriftgrößen sehen von Bereich zu
+   Bereich anders aus. Nachgemessen — er hat recht, und deutlicher als gedacht:
+
+       Schriftgrößen   34 verschiedene Werte
+       Eckenradien     15
+       Abstände (gap)  20
+       dazu 572 Inline-Styles über die drei Ansichten
+
+   WOHER DIE WERTE KOMMEN
+   Nicht erfunden. Zwei Quellen:
+   1. Der Brandpool-Tab — laut HP die Referenz, weil er gut aussieht.
+      Von dort: 17px Kartentitel, 12.5px Beschreibung, 12px Pillen und Badges,
+      11.5px Bildunterschriften, 999px für Pillen, `--green-soft` für Provisionen.
+   2. Die Häufigkeit im Bestand. Was 153-mal vorkommt, IST der Standard —
+      12.5px ist der meistgenutzte Wert überhaupt, dann 13px, dann 12px.
+
+   Die Skala ist deshalb bewusst so gewählt, dass die häufigen Werte **exakt
+   erhalten** bleiben. Nur die Ausreißer rasten ein, und zwar um höchstens 1px.
+   Das ist der ganze Trick: aufräumen, ohne das Gesicht zu verändern.
+
+   WIE MAN SIE BENUTZT
+   Neue Stellen nehmen die Variablen, nicht die Zahlen:
+       font-size: var(--fs-meta);        statt  font-size: 12px;
+       border-radius: var(--r-md);       statt  border-radius: 10px;
+       gap: var(--sp-2);                 statt  gap: 8px;
+   Wer eine Zahl braucht, die es hier nicht gibt, braucht sie meistens nicht.
+
+   WAS HIER (NOCH) NICHT DRINSTEHT
+   Die Bausteine selbst — `.prov-badge` im Brandpool und `.hb-…` in den
+   Handelsbeziehungen sind weiter eigene Klassen mit eigenem Markup. Sie sehen
+   nach dem Einrasten gleich aus, sind aber noch nicht dieselbe Komponente.
+   Das zusammenzuführen heißt Markup anfassen und gehört in einen eigenen Schritt.
+   Der Anfang steht unten unter „Bausteine".
+
+   Zum Draufschauen: shared/ui-katalog.html
+   ============================================================================ */
+
+:root {
+  /* --- Schrift ------------------------------------------------------------
+     Neun Stufen. Die vier häufigsten (12.5 · 13 · 12 · 11) bleiben unangetastet,
+     damit das Einrasten nichts verschiebt, was heute schon stimmt. */
+  --fs-mikro:   11px;    /* Label über Feldern, Bildunterschrift, Zeitstempel   */
+  --fs-meta:    12px;    /* Pillen, Badges, Nebeninfo                           */
+  --fs-klein: 12.5px;    /* meistgenutzt: Beschreibungen, Tabellen, Chips       */
+  --fs-text:    13px;    /* Fließtext                                           */
+  --fs-basis:   14px;    /* Grundschrift, Knöpfe                                */
+  --fs-betont:  15px;    /* hervorgehobene Zeile, Kartenkopf                    */
+  --fs-titel:   17px;    /* Kartentitel — aus dem Brandpool (.brand-name)       */
+  --fs-h2:      20px;    /* Abschnittsüberschrift                               */
+  --fs-h1:      26px;    /* Seitentitel                                         */
+
+  /* --- Ecken --------------------------------------------------------------
+     Vier Stufen plus Pille. 999px ist mit 96 Vorkommen der klare Spitzenreiter. */
+  --r-sm:    8px;        /* kleine Knöpfe, Chips                                */
+  --r-md:   10px;        /* Eingabefelder, Standardknopf                        */
+  --r-lg:   12px;        /* Kacheln, kleine Karten                              */
+  --r-xl:   16px;        /* große Karten, Fenster                               */
+  --r-pill: 999px;       /* Pillen und Badges                                   */
+
+  /* --- Abstände -----------------------------------------------------------
+     Vielfache von 4. Aus 20 verschiedenen Werten werden sechs. */
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+
+  /* --- Höhen --------------------------------------------------------------
+     Damit Knöpfe, Felder und Pillen nebeneinander auf einer Linie sitzen.
+     Genau das fiel Paul auf. */
+  --h-sm: 29px;
+  --h-md: 34px;
+  --h-lg: 40px;
+
+  /* --- Schatten ----------------------------------------------------------- */
+  --sh-1: 0 1px 2px rgba(16,18,29,.04), 0 6px 18px rgba(16,18,29,.05);
+  --sh-2: 0 8px 24px rgba(16,18,29,.09);
+  --sh-3: 0 20px 60px rgba(16,18,29,.20);
+
+  /* --- Farben -------------------------------------------------------------
+     Nur als Rückfall. Jede Ansicht bringt ihre eigenen mit; stimmen sie überein,
+     passiert hier nichts. Weichen sie ab, fällt es beim Vergleich sofort auf. */
+  --accent:      #2CB461;
+  --accent-dk:   #178a49;
+  --accent-soft: #e3f6ec;
+  --bg:          #f6f7f9;
+  --card:        #ffffff;
+  --text:        #16181d;
+  --muted:       #6b7280;
+  --border:      #e6e8ec;
+  --warn:        #e5820e;
+  --warn-soft:   #fdf0dd;
+  --warn-text:   #a35c05;
+}
+
+/* ============================================================================
+   BAUSTEINE
+   Der Anfang der gemeinsamen Komponenten. Bewusst mit `sp-`-Vorsatz, damit sie
+   sich mit keiner bestehenden Klasse beißen — vorhandenes Markup bleibt heil,
+   neue Stellen können sofort darauf aufbauen.
+   ============================================================================ */
+
+/* --- Badge: kurzer Status, keine Aktion ------------------------------------
+   Die Vorlage ist `.prov-badge` aus dem Brandpool. Vier Bedeutungen, sonst
+   nichts — jede weitere Farbe bräuchte einen Grund. */
+.sp-badge{
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:var(--fs-meta); font-weight:700; line-height:1;
+  padding:4px 10px; border-radius:var(--r-pill);
+  background:var(--bg); color:var(--muted); white-space:nowrap;
+}
+.sp-badge--gut    { background:var(--accent-soft); color:var(--accent-dk); }
+.sp-badge--achtung{ background:var(--warn-soft);   color:var(--warn-text); }
+.sp-badge--ruhe   { background:#eef0f2;            color:#7b828c; }
+.sp-badge--neu    { background:#e8f0ff;            color:#2563eb; }
+.sp-badge i{ font-size:13px; }
+
+/* --- Pille: Kennzahl oder Eigenschaft -------------------------------------- */
+.sp-pill{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:var(--fs-meta); color:var(--muted);
+  padding:5px 11px; border-radius:var(--r-pill);
+  background:var(--bg); border:1px solid transparent; white-space:nowrap;
+}
+.sp-pill--rand{ border-color:var(--border); background:var(--card); }
+
+/* --- Chip: auswählbar, im Gegensatz zur Pille ------------------------------ */
+.sp-chip{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:var(--fs-klein); font-weight:600; line-height:1;
+  padding:0 13px; height:var(--h-sm); border-radius:var(--r-pill);
+  background:var(--card); border:1px solid var(--border);
+  color:var(--text); cursor:pointer; transition:.12s;
+}
+.sp-chip:hover{ border-color:#c3cbd4; }
+.sp-chip[aria-pressed="true"], .sp-chip.an{
+  background:var(--accent-soft); border-color:var(--accent); color:var(--accent-dk);
+}
+
+/* --- Knopf ---------------------------------------------------------------- */
+.sp-btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  height:var(--h-md); padding:0 16px;
+  font-family:inherit; font-size:var(--fs-basis); font-weight:700; line-height:1;
+  border:1px solid var(--border); border-radius:var(--r-md);
+  background:var(--card); color:var(--text); cursor:pointer; transition:.12s;
+  white-space:nowrap;
+}
+.sp-btn:hover{ border-color:#c3cbd4; }
+.sp-btn--haupt{ background:var(--accent); border-color:var(--accent); color:#fff; }
+.sp-btn--haupt:hover{ background:var(--accent-dk); border-color:var(--accent-dk); }
+.sp-btn--leise{ background:none; border-color:transparent; color:var(--muted); }
+.sp-btn--leise:hover{ color:var(--text); }
+.sp-btn--gefahr{ background:none; border-color:transparent; color:#b42318; }
+.sp-btn--klein{ height:var(--h-sm); padding:0 12px; font-size:var(--fs-klein); }
+.sp-btn--gross{ height:var(--h-lg); padding:0 20px; }
+.sp-btn:disabled{ opacity:.55; cursor:not-allowed; }
+
+/* --- Karte ---------------------------------------------------------------- */
+.sp-card{
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--r-xl); padding:var(--sp-4);
+}
+.sp-card--flach{ box-shadow:none; }
+.sp-card--schwebend{ box-shadow:var(--sh-1); }
+.sp-card__kopf{
+  display:flex; align-items:center; gap:var(--sp-2);
+  margin:0 0 var(--sp-3); font-size:var(--fs-betont); font-weight:800;
+}
+
+/* --- Eingabefeld ---------------------------------------------------------- */
+.sp-input{
+  height:var(--h-md); padding:0 12px;
+  font-family:inherit; font-size:var(--fs-text); color:var(--text);
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--r-md); outline:none; transition:.12s;
+}
+.sp-input:focus{ border-color:var(--accent); }
+textarea.sp-input{ height:auto; padding:10px 12px; line-height:1.5; resize:vertical; }
+.sp-label{
+  display:block; margin-bottom:5px;
+  font-size:var(--fs-mikro); font-weight:800; letter-spacing:.05em;
+  text-transform:uppercase; color:#aab0b8;
+}
+
+/* --- Leerzustand ---------------------------------------------------------- */
+.sp-leer{
+  display:grid; place-items:center; gap:var(--sp-2);
+  padding:var(--sp-6) var(--sp-4); text-align:center;
+  font-size:var(--fs-text); color:var(--muted);
+}
+.sp-leer i{ font-size:26px; color:#c2c7ce; }
